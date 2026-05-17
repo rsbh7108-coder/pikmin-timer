@@ -352,10 +352,17 @@
 
     function showTour(index) {
       var overlay = document.getElementById('tourOverlay');
+      closeToolsForTour();
       tourIndex = Math.max(0, Math.min(index || 0, tourSteps.length - 1));
       renderTour();
       overlay.className = 'tour-overlay open';
       setTimeout(updateTourHighlight, 30);
+    }
+
+    function closeToolsForTour() {
+      var toolRow = document.getElementById('toolRow');
+      isToolOpen = false;
+      if (toolRow) toolRow.className = 'tool-row';
     }
 
     function hideTour(markDone) {
@@ -633,6 +640,7 @@
       document.getElementById('notifyBtn').onclick = requestNotificationPermission;
 
       document.getElementById('tourBtn').onclick = function() {
+        closeToolsForTour();
         showTour(0);
       };
 
