@@ -28,6 +28,83 @@
     .tool-row button { background: #f0f3ee; color: #5f6b59; font-size: 12px; padding: 6px 9px; border-radius: 999px; }
 
     .panel { background: #fff; border-radius: 15px; padding: 10px; margin-bottom: 10px; border: 1px solid #dfead8; box-shadow: 0 5px 14px rgba(51,93,39,.11); }
+    .tour-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(20,35,20,.58); display: none; align-items: center; justify-content: center; padding: 18px; }
+    .tour-highlight {
+      position: fixed;
+      border: 2px solid #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 0 0 9999px rgba(20,35,20,.58), 0 0 0 4px rgba(255,255,255,.25);
+      z-index: 10000;
+      pointer-events: none;
+      transition: all .25s ease;
+    }
+    .tour-highlight.hidden { display: none; }
+    .tour-overlay.open { display: flex; }
+    .tour-card {
+      width: min(420px,100%);
+      min-height: 270px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: transparent;
+      border-radius: 22px;
+      padding: 8px;
+      box-shadow: none;
+      border: 0;
+      backdrop-filter: none;
+    }
+    .tour-step-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.18);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+      border-radius: 999px;
+      padding: 5px 10px;
+      margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,.25);
+      backdrop-filter: blur(6px);
+    }
+    .tour-title {
+      font-size: 22px;
+      font-weight: 950;
+      color: #ffffff;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 12px rgba(0,0,0,.35);
+    }
+    .tour-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: rgba(255,255,255,.95);
+      margin-bottom: 16px;
+      min-height: 108px;
+      text-shadow: 0 2px 12px rgba(0,0,0,.35);
+    }
+    .tour-actions { display: flex; gap: 8px; justify-content: space-between; align-items: center; min-height: 44px; }
+    .tour-right-actions { display: flex; gap: 8px; align-items: center; }
+    .tour-btn {
+      background: rgba(255,255,255,.18);
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 14px;
+      border: 1px solid rgba(255,255,255,.25);
+      backdrop-filter: blur(6px);
+    }
+    .tour-btn.secondary-tour {
+      background: rgba(255,255,255,.12);
+      color: rgba(255,255,255,.92);
+    }
+    .tour-btn.skip-tour {
+      background: transparent;
+      color: rgba(255,255,255,.75);
+      padding: 8px 4px;
+      border: 0;
+      backdrop-filter: none;
+    }
+    .tour-dots { display: flex; gap: 5px; justify-content: center; margin-top: 12px; }
+    .tour-dot { width: 7px; height: 7px; border-radius: 50%; background: #d6e4cf; }
+    .tour-dot.active { background: #4caf50; }
     .location-input-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; align-items: center; }
     .location-buttons { display: contents; }
     input { width: 100%; min-width: 0; padding: 9px 10px; font-size: 15px; border: 1px solid #cddcc6; border-radius: 11px; outline: none; background: #fbfdf9; }
@@ -118,6 +195,7 @@
       <button type="button" id="exportBtn">匯出</button>
       <button type="button" id="importBtn">匯入</button>
       <button type="button" id="notifyBtn" style="display:none;">啟用提醒</button>
+      <button type="button" id="tourBtn">導覽說明</button>
       <button type="button" id="clearAllBtn">清空</button>
     </div>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
@@ -133,6 +211,28 @@
     </section>
 
     <section id="locationList" class="location-list"></section>
+
+    <footer style="margin:22px 0 8px;text-align:center;font-size:12px;color:#8a9584;letter-spacing:.5px;">
+      種子雲資訊有限公司 © 2026
+    </footer>
+  </div>
+
+  <div class="tour-highlight hidden" id="tourHighlight"></div>
+
+  <div class="tour-overlay" id="tourOverlay">
+    <div class="tour-card">
+      <div class="tour-step-badge" id="tourBadge">第 1 步</div>
+      <div class="tour-title" id="tourTitle">歡迎使用</div>
+      <div class="tour-text" id="tourText">歡迎各位皮友們使用！設計者所在地區是一級戰區，搶菇總是心跳加速，搶不到又恨得牙癢癢；有時候按了快 5 分鐘又一場空，還會懷疑自己是不是有點蠢。為了不要一直浪費時間苦等，就設計了這個小工具，希望大家都能更輕鬆搶菇、愉快打菇。</div>
+      <div class="tour-actions">
+        <button type="button" class="tour-btn skip-tour" id="tourSkipBtn">略過說明</button>
+        <div class="tour-right-actions">
+          <button type="button" class="tour-btn secondary-tour" id="tourPrevBtn">上一步</button>
+          <button type="button" class="tour-btn" id="tourNextBtn">下一步</button>
+        </div>
+      </div>
+      <div class="tour-dots" id="tourDots"></div>
+    </div>
   </div>
 
   <script>
@@ -148,6 +248,7 @@
     var editingSceneId = null;
     var pendingDeleteSceneId = null;
     var isToolOpen = false;
+    var tourIndex = 0;
     var MAX_SCENES = 3;
     var MAX_NAME_LENGTH = 8;
 
@@ -225,6 +326,92 @@
     function clearElement(element) { while (element.firstChild) element.removeChild(element.firstChild); }
     function makeButton(text, className, onClick) { var button = document.createElement('button'); button.type = 'button'; button.textContent = text; if (className) button.className = className; button.onclick = onClick; return button; }
     function toggleTools() { isToolOpen = !isToolOpen; document.getElementById('toolRow').className = isToolOpen ? 'tool-row open' : 'tool-row'; }
+
+    var tourSteps = [
+      { title: '歡迎使用', text: '歡迎各位皮友們使用！設計者所在地區是一級戰區，搶菇總是心跳加速，搶不到又恨得牙癢癢；有時候按了快 5 分鐘又一場空，還會懷疑自己是不是有點蠢。為了不要一直浪費時間苦等，就設計了這個小工具，希望大家都能更輕鬆搶菇、愉快打菇。', selector: '.tour-card' },
+      { title: '新增地點', text: '輸入菇的名稱，選擇「正常位置」或「關精準位置」，就可以建位。「關精準位置」可於手機的設定、Pikmin Bloom、位置裡設定。', selector: '.panel' },
+      { title: '地點修改名稱', text: '地點旁邊的 ✎ 可以修改名稱。', selector: '.location-card .edit-icon-btn' },
+      { title: '輸入剩餘時間', text: '在剩餘時間欄位輸入 1230 代表 12分30秒；輸入 200 代表 2分00秒。按「起算/清空」即可開始倒數。若輸入錯誤重新輸入即可；若要取消倒數，欄位空白後再按「起算/清空」。', selector: '.location-card .input-row' },
+      { title: '新增 / 切換場景', text: '上方頁籤可以切換場景，例如家裡、辦公室。按「＋新增」可建立新場景，最多 3 個。', selector: '.top-bar' },
+      { title: '齒輪工具', text: '右上角 ⚙ 可開啟資料匯出、匯入、清空，也可以再次打開這份導覽說明。', selector: '#settingsBtn' }
+    ];
+
+    function showTour(index) {
+      var overlay = document.getElementById('tourOverlay');
+      tourIndex = Math.max(0, Math.min(index || 0, tourSteps.length - 1));
+      renderTour();
+      overlay.className = 'tour-overlay open';
+      setTimeout(updateTourHighlight, 30);
+    }
+
+    function hideTour(markDone) {
+      var overlay = document.getElementById('tourOverlay');
+      var highlight = document.getElementById('tourHighlight');
+      overlay.className = 'tour-overlay';
+      highlight.className = 'tour-highlight hidden';
+      if (markDone && safeStorageAvailable()) localStorage.setItem('pikmin_tour_seen_v1', '1');
+    }
+
+    function updateTourHighlight() {
+      var step = tourSteps[tourIndex];
+      var highlight = document.getElementById('tourHighlight');
+      var target;
+      var rect;
+
+      if (!step || !step.selector) {
+        highlight.className = 'tour-highlight hidden';
+        return;
+      }
+
+      target = document.querySelector(step.selector);
+
+      if (!target) {
+        highlight.className = 'tour-highlight hidden';
+        return;
+      }
+
+      rect = target.getBoundingClientRect();
+
+      highlight.className = 'tour-highlight';
+      highlight.style.left = (rect.left - 6) + 'px';
+      highlight.style.top = (rect.top - 6) + 'px';
+      highlight.style.width = (rect.width + 12) + 'px';
+      highlight.style.height = (rect.height + 12) + 'px';
+    }
+
+    function renderTour() {
+      var dots = document.getElementById('tourDots');
+      var i;
+      clearElement(dots);
+      document.getElementById('tourBadge').textContent = '第 ' + (tourIndex + 1) + ' 步 / 共 ' + tourSteps.length + ' 步';
+      document.getElementById('tourTitle').textContent = tourSteps[tourIndex].title;
+      document.getElementById('tourText').textContent = tourSteps[tourIndex].text;
+      document.getElementById('tourPrevBtn').style.display = tourIndex === 0 ? 'none' : 'inline-block';
+      document.getElementById('tourNextBtn').textContent = tourIndex === tourSteps.length - 1 ? '完成' : '下一步';
+      for (i = 0; i < tourSteps.length; i += 1) {
+        var dot = document.createElement('span');
+        dot.className = 'tour-dot' + (i === tourIndex ? ' active' : '');
+        dots.appendChild(dot);
+      }
+    }
+
+    function nextTour() {
+      if (tourIndex >= tourSteps.length - 1) { hideTour(true); return; }
+      tourIndex += 1;
+      renderTour();
+      setTimeout(updateTourHighlight, 30);
+    }
+
+    function prevTour() {
+      if (tourIndex > 0) tourIndex -= 1;
+      renderTour();
+      setTimeout(updateTourHighlight, 30);
+    }
+
+    function maybeShowFirstTour() {
+      if (!safeStorageAvailable()) return;
+      if (localStorage.getItem('pikmin_tour_seen_v1') !== '1') showTour(0);
+    }
 
     function beginAddScene() { if (scenes.length >= MAX_SCENES) { alert('場景最多只能新增 3 個'); return; } editingSceneId = null; isAddingScene = true; renderSceneTabs(); setTimeout(function(){ var input = document.getElementById('newSceneName'); if (input) input.focus(); }, 0); }
     function cancelAddScene() { isAddingScene = false; renderSceneTabs(); }
@@ -341,7 +528,7 @@
 
     function requestNotificationPermission() { if (!('Notification' in window)) { alert('這個瀏覽器不支援系統通知。'); updateNotifyButton(); return; } if (Notification.permission === 'granted') { alert('提醒已啟用'); updateNotifyButton(); return; } if (Notification.permission === 'denied') { alert('目前通知未允許，請到瀏覽器設定開啟。'); updateNotifyButton(); return; } Notification.requestPermission(function(permission){ if (permission === 'granted') alert('提醒已啟用，倒數剩 1 分鐘會通知。'); updateNotifyButton(); }); }
     function updateNotifyButton() { var button = document.getElementById('notifyBtn'); if (!button) return; if (!('Notification' in window)) button.textContent = '通知不支援'; else if (Notification.permission === 'granted') button.textContent = '提醒已啟用'; else if (Notification.permission === 'denied') button.textContent = '通知未允許'; else button.textContent = '啟用提醒'; }
-    function sendOneMinuteNotification(location) { if (!('Notification' in window) || Notification.permission !== 'granted') return; try { new Notification('🍄 菇菇即將重生', { body: location.name + '｜' + location.type + '｜預計重生：' + formatClock(location.respawnTime), tag: 'pikmin-' + location.id, renotify: true }); } catch(e) { console.warn(e); } if (navigator.vibrate) navigator.vibrate([200,80,200]); }
+    function sendOneMinuteNotification(location) { if (!('Notification' in window) || Notification.permission !== 'granted') return; try { new Notification('菇菇即將重生', { body: location.name + '｜' + location.type + '｜預計重生：' + formatClock(location.respawnTime), tag: 'pikmin-' + location.id, renotify: true }); } catch(e) { console.warn(e); } if (navigator.vibrate) navigator.vibrate([200,80,200]); }
     function updateAllCountdowns() { var source = getLocations(), i, location, el, inputEl, finishEl, respawnEl, cardEl, diff; for (i = 0; i < source.length; i += 1) { location = source[i]; el = document.getElementById('countdown-' + location.id); inputEl = document.getElementById('input-' + location.id); finishEl = document.getElementById('finish-' + location.id); respawnEl = document.getElementById('respawn-' + location.id); cardEl = document.getElementById('location-' + location.id); if (inputEl) inputEl.textContent = location.inputTime || '尚未輸入'; if (finishEl) finishEl.textContent = formatClock(location.finishTime); if (respawnEl) respawnEl.textContent = formatClock(location.respawnTime); if (cardEl) cardEl.className = cardEl.className.replace(' warning-soon',''); if (!el) continue; el.className = 'countdown-inline'; if (!location.respawnTime) { el.textContent = '尚未設定'; el.className = 'countdown-inline waiting'; continue; } diff = location.respawnTime.getTime() - Date.now(); if (diff <= 0) { el.textContent = '✅ 已重生'; el.className = 'countdown-inline done'; } else { if (diff <= 60000) { if (cardEl && cardEl.className.indexOf('warning-soon') < 0) cardEl.className += ' warning-soon'; if (!location.notifiedOneMinute) { sendOneMinuteNotification(location); location.notifiedOneMinute = true; saveState(); } } el.textContent = '倒數 ' + formatCountdown(diff); } } }
 
     function exportData() { var data = serializeState(), json = JSON.stringify(data,null,2), blob = new Blob([json], { type:'application/json' }), url = URL.createObjectURL(blob), a = document.createElement('a'), dateText = new Date().toISOString().slice(0,10); a.href = url; a.download = 'pikmin-timer-' + dateText + '.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
@@ -349,7 +536,79 @@
     function clearAllData() { var i; if (!confirm('確定要清空所有場景、地點與倒數資料嗎？')) return; scenes = [{ id:'scene_1', name:'預設場景', locations:[] }]; currentSceneId = 'scene_1'; locationCounter = 1; sceneCounter = 2; isAddingScene = false; editingSceneId = null; pendingDeleteSceneId = null; if (safeStorageAvailable()) { localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState())); for (i = 0; i < OLD_KEYS.length; i += 1) localStorage.removeItem(OLD_KEYS[i]); } render(); }
 
     function runTests() { console.assert(parseTime('12:30') === 750, 'parse 12:30'); console.assert(parseTime('1230') === 750, 'parse 1230'); console.assert(parseTime('200') === 120, 'parse 200'); console.assert(parseTime('45') === 45, 'parse 45'); console.assert(parseTime('1:60') === null, 'reject 1:60'); console.assert(normalizeTimeLabel('1230') === '12:30', 'normalize'); console.assert(getDirectionButtons().length === 9, 'directions'); console.assert(MAX_SCENES === 3, 'max scenes'); }
-    function init() { document.getElementById('settingsBtn').onclick = toggleTools; document.getElementById('addNormalBtn').onclick = function(){ addLocation('正常位置'); }; document.getElementById('addPreciseOffBtn').onclick = function(){ addLocation('關精準位置'); }; document.getElementById('exportBtn').onclick = exportData; document.getElementById('importBtn').onclick = function(){ document.getElementById('importFile').click(); }; document.getElementById('notifyBtn').onclick = requestNotificationPermission; document.getElementById('clearAllBtn').onclick = clearAllData; document.getElementById('importFile').onchange = function(event){ var file = event.target.files && event.target.files[0]; if (file) importDataFromFile(file); event.target.value = ''; }; if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) document.getElementById('notifyBtn').style.display = 'inline-block'; if (!loadState()) { scenes = [{ id:'scene_1', name:'預設場景', locations:[createLocation('正常位置','A地點'), createLocation('關精準位置','B地點')] }]; currentSceneId = 'scene_1'; sceneCounter = 2; saveState(); } runTests(); render(); updateNotifyButton(); if (intervalId) clearInterval(intervalId); intervalId = setInterval(updateAllCountdowns, 1000); }
+    function init() {
+      document.getElementById('settingsBtn').onclick = toggleTools;
+
+      document.getElementById('addNormalBtn').onclick = function() {
+        addLocation('正常位置');
+      };
+
+      document.getElementById('addPreciseOffBtn').onclick = function() {
+        addLocation('關精準位置');
+      };
+
+      document.getElementById('exportBtn').onclick = exportData;
+
+      document.getElementById('importBtn').onclick = function() {
+        document.getElementById('importFile').click();
+      };
+
+      document.getElementById('notifyBtn').onclick = requestNotificationPermission;
+
+      document.getElementById('tourBtn').onclick = function() {
+        showTour(0);
+      };
+
+      document.getElementById('clearAllBtn').onclick = clearAllData;
+
+      document.getElementById('tourSkipBtn').onclick = function() {
+        hideTour(true);
+      };
+
+      document.getElementById('tourNextBtn').onclick = nextTour;
+      document.getElementById('tourPrevBtn').onclick = prevTour;
+
+      document.getElementById('importFile').onchange = function(event) {
+        var file = event.target.files && event.target.files[0];
+
+        if (file) {
+          importDataFromFile(file);
+        }
+
+        event.target.value = '';
+      };
+
+      if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        document.getElementById('notifyBtn').style.display = 'inline-block';
+      }
+
+      if (!loadState()) {
+        scenes = [{
+          id: 'scene_1',
+          name: '預設場景',
+          locations: [
+            createLocation('正常位置', 'A地點'),
+            createLocation('關精準位置', 'B地點')
+          ]
+        }];
+
+        currentSceneId = 'scene_1';
+        sceneCounter = 2;
+        saveState();
+      }
+
+      runTests();
+      render();
+      updateNotifyButton();
+      maybeShowFirstTour();
+
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+
+      intervalId = setInterval(updateAllCountdowns, 1000);
+    }
+
     init();
   </script>
 </body>
