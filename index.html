@@ -238,6 +238,7 @@
     var swipeState = { startX: 0, startY: 0, item: null };
     var isAddingScene = false;
     var editingSceneId = null;
+    var pendingDeleteSceneId = null;
     var MAX_SCENES = 3;
 
     function createLocation(type, customName) {
@@ -353,6 +354,37 @@
       renderSceneTabs();
     }
 
+    function beginDeleteScene(sceneId) {
+      if (sceneId === 'scene_1') return;
+      pendingDeleteSceneId = sceneId;
+      renderSceneManager();
+    }
+
+    function cancelDeleteScene() {
+      pendingDeleteSceneId = null;
+      renderSceneManager();
+    }
+
+    function confirmDeleteSceneById(sceneId) {
+      var next = [];
+      var i;
+      if (sceneId === 'scene_1') {
+        alert('預設第1個場景不可刪除。');
+        return;
+      }
+      for (i = 0; i < scenes.length; i = i + 1) {
+        if (scenes[i].id !== sceneId) next.push(scenes[i]);
+      }
+      if (next.length === scenes.length) return;
+      scenes = next;
+      currentSceneId = 'scene_1';
+      editingSceneId = null;
+      pendingDeleteSceneId = null;
+      isAddingScene = false;
+      saveState();
+      render();
+    }
+
     function confirmEditScene(sceneId) {
       var input = document.getElementById('editSceneName');
       var name = input ? String(input.value).trim() : '';
@@ -439,7 +471,12 @@
     function deleteScene() {
       deleteSceneById(currentSceneId);
     }
-    function switchScene(id) { currentSceneId = id; saveState(); render(); }
+    function switchScene(id) {
+      currentSceneId = id;
+      pendingDeleteSceneId = null;
+      saveState();
+      render();
+    }
 
     function addLocation(type) { var input = document.getElementById('newLocationName'), customName = input.value.trim(); if (!customName) { alert('請先輸入地點名稱'); return; } getLocations().push(createLocation(type, customName)); input.value = ''; saveState(); render(); }
     function deleteLocation(id) { var list = getLocations(), next = [], i; for (i = 0; i < list.length; i = i + 1) if (list[i].id !== id) next.push(list[i]); setLocations(next); saveState(); render(); }
@@ -617,39 +654,72 @@
       var bar = document.getElementById('sceneManageBar');
       var current = getCurrentScene();
       var btn;
+      var confirmBtn;
+      var cancelBtn;
+      var label;
       clearElement(bar);
 
       if (!current) return;
+      if (current.id === 'scene_1') return;
 
-      if (current.id !== 'scene_1') {
-        btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'scene-action delete';
-        btn.textContent = '刪除此場景';
-        btn.style.background = '#e53935';
-        btn.style.color = '#fff';
-        btn.onclick = function() {
-          var ok;
-          var next = [];
-          var i;
+      if (pendingDeleteSceneId === current.id) {
+        label = document.createElement('span');
+        label.textContent = '刪除後無法回復';
+        label.style.fontSize = '12px';
+        label.style.color = '#b04545';
+        label.style.alignSelf = 'center';
+        bar.appendChild(label);
 
-          ok = window.confirm('確定刪除場景「' + current.name + '」？');
-          if (!ok) return false;
-
-          for (i = 0; i < scenes.length; i = i + 1) {
-            if (scenes[i].id !== current.id) next.push(scenes[i]);
+        confirmBtn = document.createElement('button');
+        confirmBtn.type = 'button';
+        confirmBtn.className = 'scene-action delete';
+        confirmBtn.textContent = '確認刪除';
+        confirmBtn.style.background = '#e53935';
+        confirmBtn.style.color = '#fff';
+        confirmBtn.onclick = function(event) {
+          if (event) {
+            event.preventDefault();
+            event.stopPropagation();
           }
-
-          scenes = next;
-          currentSceneId = 'scene_1';
-          editingSceneId = null;
-          isAddingScene = false;
-          saveState();
-          render();
+          confirmDeleteSceneById(current.id);
           return false;
         };
-        bar.appendChild(btn);
+        confirmBtn.ontouchend = confirmBtn.onclick;
+        bar.appendChild(confirmBtn);
+
+        cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'scene-action';
+        cancelBtn.textContent = '取消';
+        cancelBtn.onclick = function(event) {
+          if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          cancelDeleteScene();
+          return false;
+        };
+        cancelBtn.ontouchend = cancelBtn.onclick;
+        bar.appendChild(cancelBtn);
+        return;
       }
+
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'scene-action delete';
+      btn.textContent = '刪除此場景';
+      btn.style.background = '#e53935';
+      btn.style.color = '#fff';
+      btn.onclick = function(event) {
+        if (event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        beginDeleteScene(current.id);
+        return false;
+      };
+      btn.ontouchend = btn.onclick;
+      bar.appendChild(btn);
     }
 
     function renderActiveGroup(container, activeLocations) { var groupBlock = document.createElement('div'), groupTitle = document.createElement('div'), dot = document.createElement('span'), count = document.createElement('span'), i; groupBlock.className = 'group-block'; groupTitle.className = 'group-title'; dot.className = 'group-dot'; dot.style.background = '#ff9800'; groupTitle.appendChild(dot); groupTitle.appendChild(document.createTextNode('正在倒數')); count.className = 'group-count'; count.appendChild(document.createTextNode(activeLocations.length + ' 個進行中')); groupTitle.appendChild(count); groupBlock.appendChild(groupTitle); for (i = 0; i < activeLocations.length; i = i + 1) groupBlock.appendChild(createLocationCard(activeLocations[i])); container.appendChild(groupBlock); }
