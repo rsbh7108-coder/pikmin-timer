@@ -17,9 +17,79 @@
     .app { width: 100%; max-width: 760px; margin: 0 auto; overflow-x: hidden; }
     h1 { margin: 6px 0 4px; font-size: 25px; color: #2f7d32; text-align: center; line-height: 1.25; }
     .subtitle { text-align: center; color: #66745f; margin-bottom: 10px; font-size: 13px; line-height: 1.45; }
+
+    .scene-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 4px 0 10px;
+      overflow-x: auto;
+      padding: 4px 2px 6px;
+      scrollbar-width: none;
+    }
+    .scene-bar::-webkit-scrollbar { display: none; }
+    .scene-tab-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: #ffffff;
+      border: 1px solid #d8e8cf;
+      border-radius: 999px;
+      box-shadow: 0 2px 8px rgba(51, 93, 39, 0.08);
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+    .scene-tab-wrap.active {
+      background: #4caf50;
+      border-color: #4caf50;
+    }
+    .scene-tab {
+      border: 0;
+      background: transparent;
+      color: #4f6548;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      box-shadow: none;
+      flex: 0 0 auto;
+    }
+    .scene-tab.active {
+      color: #fff;
+    }
+    .scene-tab-danger,
+    .scene-tab-delete,
+    .scene-tab-edit {
+      border: 0;
+      background: rgba(255,255,255,0.7);
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 1;
+    }
+    .scene-tab-edit { color: #5f6b59; }
+    .scene-tab-delete { color: #b04545; margin-right: 3px; }
+    .scene-tab-danger { color: #ffffff; background: #e53935; width: auto; padding: 0 8px; border-radius: 999px; }
+    .scene-tab-delete:hover, .scene-tab-danger:hover { background: #c62828; }
+    .scene-tab-edit:hover { background: #eef6e9; }
+    .scene-action {
+      background: #f0f3ee;
+      color: #5f6b59;
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      flex: 0 0 auto;
+    }
+    .scene-action.delete { color: #b04545; }
+    .scene-action:disabled { opacity: 0.45; cursor: not-allowed; }
+
     .tool-row { display: flex; justify-content: flex-end; gap: 6px; margin: 0 0 10px; align-items: center; }
     .tool-row button { background: #f0f3ee; color: #5f6b59; font-size: 12px; padding: 6px 9px; border-radius: 999px; }
-    .tool-row button:hover { background: #e1eadc; }
+    .tool-row button:hover, .scene-action:hover { background: #e1eadc; }
+
     .panel {
       background: #fff;
       border-radius: 16px;
@@ -59,95 +129,28 @@
 
     .location-list { display: flex; flex-direction: column; gap: 12px; width: 100%; overflow-x: hidden; }
     .group-block { display: flex; flex-direction: column; gap: 9px; }
-    .group-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      font-weight: 900;
-      color: #4f6548;
-      padding: 0 4px;
-      margin-top: 2px;
-    }
-    .group-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #4caf50;
-      flex: 0 0 auto;
-    }
+    .group-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 900; color: #4f6548; padding: 0 4px; margin-top: 2px; }
+    .group-dot { width: 10px; height: 10px; border-radius: 50%; background: #4caf50; flex: 0 0 auto; }
     .group-dot.precise-off { background: #7b61ff; }
     .group-count { color: #8a9584; font-size: 12px; font-weight: 800; }
+
     .swipe-item { position: relative; width: 100%; overflow: hidden; border-radius: 15px; }
-    .swipe-delete {
-      position: absolute; right: 0; top: 0; bottom: 0;
-      width: 78px;
-      border-radius: 0 15px 15px 0;
-      background: #e53935;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      z-index: 0;
-    }
-    .location-card {
-      background: #fff;
-      border-radius: 15px;
-      border: 1px solid #dfead8;
-      box-shadow: 0 4px 12px rgba(51, 93, 39, 0.09);
-      padding: 10px 10px 10px 14px;
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-      transition: transform 0.18s ease;
-      touch-action: pan-y;
-    }
-    .location-card:before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 7px;
-      background: #4caf50;
-    }
+    .swipe-delete { position: absolute; right: 0; top: 0; bottom: 0; width: 78px; border-radius: 0 15px 15px 0; background: #e53935; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; z-index: 0; }
+    .location-card { background: #fff; border-radius: 15px; border: 1px solid #dfead8; box-shadow: 0 4px 12px rgba(51, 93, 39, 0.09); padding: 10px 10px 10px 14px; position: relative; overflow: hidden; z-index: 1; transition: transform 0.18s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; touch-action: pan-y; }
+    @keyframes oneMinutePulse { 0% { box-shadow: 0 0 0 rgba(255, 152, 0, 0); } 50% { box-shadow: 0 0 18px rgba(255, 152, 0, 0.65); } 100% { box-shadow: 0 0 0 rgba(255, 152, 0, 0); } }
+    .location-card.warning-soon { background: #fff3e0; border-color: #ff9800; animation: oneMinutePulse 1.2s infinite; }
+    .location-card.warning-soon:before { background: #ff9800; }
+    .location-card:before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 7px; background: #4caf50; }
     .location-card.precise-off:before { background: #7b61ff; }
     .swipe-item.open .location-card { transform: translateX(-78px); }
 
-    .card-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.1fr) auto;
-      gap: 10px;
-      align-items: center;
-      width: 100%;
-      min-width: 0;
-    }
+    .card-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.1fr) auto; gap: 10px; align-items: center; width: 100%; min-width: 0; }
     .main-block, .timer-block, .delete-block { min-width: 0; }
-    .title-row, .meta-row, .input-row, .status-row, .respawn-row {
-      display: flex;
-      align-items: center;
-      min-width: 0;
-    }
+    .title-row, .meta-row, .input-row, .status-row, .respawn-row { display: flex; align-items: center; min-width: 0; }
     .title-row { gap: 6px; }
     .meta-row { gap: 7px; margin-top: 5px; color: #66745f; font-size: 13px; }
-    .location-name {
-      font-weight: 900;
-      font-size: 17px;
-      color: #263d24;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-width: 0;
-    }
-    .edit-icon-btn {
-      background: #f0f3ee;
-      color: #5f6b59;
-      width: 24px;
-      height: 24px;
-      padding: 0;
-      border-radius: 50%;
-      font-size: 12px;
-      flex: 0 0 auto;
-    }
+    .location-name { font-weight: 900; font-size: 17px; color: #263d24; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+    .edit-icon-btn { background: #f0f3ee; color: #5f6b59; width: 24px; height: 24px; padding: 0; border-radius: 50%; font-size: 12px; flex: 0 0 auto; }
     .edit-icon-btn:hover { background: #e1eadc; }
     .direction-display { font-size: 18px; font-weight: 900; color: #ff8a00; min-width: 18px; text-align: center; line-height: 1; }
     .direction-display.empty { color: #a8b1a2; font-size: 13px; font-weight: 800; }
@@ -163,18 +166,10 @@
     .respawn-row { justify-content: flex-end; color: #d6427a; font-weight: 900; font-size: 15px; white-space: nowrap; text-align: right; }
     .desktop-delete { background: #eee; color: #666; padding: 8px 10px; font-size: 13px; border-radius: 10px; }
     .desktop-delete:hover { background: #ddd; }
-
     .inline-edit-row { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; margin-bottom: 6px; }
     .save-btn { background: #4caf50; }
     .cancel-btn { background: #eee; color: #666; }
-    .direction-popover, .people-popover {
-      margin-top: 7px;
-      padding: 8px;
-      background: #fbfdf9;
-      border: 1px solid #dfead8;
-      border-radius: 13px;
-      box-shadow: 0 4px 12px rgba(51, 93, 39, 0.08);
-    }
+    .direction-popover, .people-popover { margin-top: 7px; padding: 8px; background: #fbfdf9; border: 1px solid #dfead8; border-radius: 13px; box-shadow: 0 4px 12px rgba(51, 93, 39, 0.08); }
     .direction-popover { width: 132px; }
     .people-popover { width: 170px; }
     .people-edit-row { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; }
@@ -207,10 +202,13 @@
     <h1>🍄 皮克敏菇菇重生計時器</h1>
     <div class="subtitle">輸入地點名稱並選擇分類；系統會計算「打完時間 + 5分鐘」並依最快重生排序</div>
 
+    <div class="scene-bar" id="sceneBar"></div>
+    <div id="sceneManageBar" style="display:flex;justify-content:flex-end;gap:6px;margin:-2px 0 10px;"></div>
+
     <div class="tool-row">
       <button type="button" id="exportBtn">匯出</button>
       <button type="button" id="importBtn">匯入</button>
-      <button type="button" id="notifyBtn">啟用提醒</button>
+      <button type="button" id="notifyBtn" style="display:none;">啟用提醒</button>
       <button type="button" id="clearAllBtn">清空</button>
     </div>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
@@ -230,123 +228,221 @@
   </div>
 
   <script>
-    var STORAGE_KEY = 'pikmin_mushroom_timer_v2';
+    var STORAGE_KEY = 'pikmin_mushroom_timer_v4';
+    var OLD_KEYS = ['pikmin_mushroom_timer_v3', 'pikmin_mushroom_timer_v2', 'pikmin_mushroom_timer_v1'];
     var locationCounter = 1;
-    var locations = [];
+    var sceneCounter = 2;
+    var scenes = [];
+    var currentSceneId = 'scene_1';
     var intervalId = null;
     var swipeState = { startX: 0, startY: 0, item: null };
+    var isAddingScene = false;
+    var editingSceneId = null;
+    var MAX_SCENES = 3;
 
     function createLocation(type, customName) {
       var name = customName || type + ' ' + locationCounter;
       locationCounter = locationCounter + 1;
-      return {
-        id: 'loc_' + new Date().getTime() + '_' + Math.floor(Math.random() * 1000000),
-        type: type,
-        name: name,
-        inputTime: '',
-        finishTime: null,
-        respawnTime: null,
-        direction: '',
-        isEditingName: false,
-        isEditingDirection: false,
-        peopleCount: '',
-        isEditingPeople: false,
-        notifiedOneMinute: false
-      };
+      return { id: 'loc_' + new Date().getTime() + '_' + Math.floor(Math.random() * 1000000), type: type, name: name, inputTime: '', finishTime: null, respawnTime: null, direction: '', isEditingName: false, isEditingDirection: false, peopleCount: '', isEditingPeople: false, notifiedOneMinute: false };
     }
+    function createScene(name, locations) {
+      var id;
+      sceneCounter = Math.max(sceneCounter, 2);
+      id = 'scene_' + sceneCounter;
+      sceneCounter = sceneCounter + 1;
+      return { id: id, name: name, locations: locations || [] };
+    }
+    function getCurrentScene() { var i; for (i = 0; i < scenes.length; i = i + 1) if (scenes[i].id === currentSceneId) return scenes[i]; return scenes[0]; }
+    function getLocations() { var scene = getCurrentScene(); return scene ? scene.locations : []; }
+    function setLocations(next) { var scene = getCurrentScene(); if (scene) scene.locations = next; }
+    function findLocation(id) { var list = getLocations(), i; for (i = 0; i < list.length; i = i + 1) if (list[i].id === id) return list[i]; return null; }
 
     function isWholeNumber(value) { return typeof value === 'number' && isFinite(value) && Math.floor(value) === value; }
-    function parseTime(value) {
-      var text = String(value || '').trim();
-      var parts, minutes, seconds;
-      if (!text) return null;
-      if (text.indexOf(':') >= 0) {
-        parts = text.split(':');
-        if (parts.length !== 2) return null;
-        minutes = Number(parts[0]);
-        seconds = Number(parts[1]);
-      } else {
-        if (!/^\d+$/.test(text)) return null;
-        if (text.length <= 2) { minutes = 0; seconds = Number(text); }
-        else { seconds = Number(text.slice(-2)); minutes = Number(text.slice(0, -2)); }
-      }
-      if (!isWholeNumber(minutes) || !isWholeNumber(seconds)) return null;
-      if (minutes < 0 || seconds < 0 || seconds >= 60) return null;
-      return minutes * 60 + seconds;
-    }
+    function parseTime(value) { var text = String(value || '').trim(), parts, minutes, seconds; if (!text) return null; if (text.indexOf(':') >= 0) { parts = text.split(':'); if (parts.length !== 2) return null; minutes = Number(parts[0]); seconds = Number(parts[1]); } else { if (!/^\d+$/.test(text)) return null; if (text.length <= 2) { minutes = 0; seconds = Number(text); } else { seconds = Number(text.slice(-2)); minutes = Number(text.slice(0, -2)); } } if (!isWholeNumber(minutes) || !isWholeNumber(seconds)) return null; if (minutes < 0 || seconds < 0 || seconds >= 60) return null; return minutes * 60 + seconds; }
     function pad2(value) { value = String(value); return value.length < 2 ? '0' + value : value; }
-    function normalizeTimeLabel(value) {
-      var totalSeconds = parseTime(value), minutes, seconds;
-      if (totalSeconds === null) return '';
-      minutes = Math.floor(totalSeconds / 60);
-      seconds = totalSeconds % 60;
-      return minutes + ':' + pad2(seconds);
-    }
+    function normalizeTimeLabel(value) { var totalSeconds = parseTime(value), minutes, seconds; if (totalSeconds === null) return ''; minutes = Math.floor(totalSeconds / 60); seconds = totalSeconds % 60; return minutes + ':' + pad2(seconds); }
     function formatClock(date) { if (!date) return '尚未設定'; return pad2(date.getHours()) + ':' + pad2(date.getMinutes()) + ':' + pad2(date.getSeconds()); }
-    function formatCountdown(ms) {
-      var totalSeconds = Math.max(0, Math.floor(ms / 1000));
-      var minutes = Math.floor(totalSeconds / 60);
-      var seconds = totalSeconds % 60;
-      return minutes + '分 ' + pad2(seconds) + '秒';
-    }
-    function getTimerStatus(location) {
-      if (!location.respawnTime) return 2;
-      if (location.respawnTime.getTime() <= new Date().getTime()) return 1;
-      return 0;
-    }
-    function getSortValue(location) {
-      if (!location.respawnTime) return 9007199254740991;
-      return Math.max(0, location.respawnTime.getTime() - new Date().getTime());
-    }
-    function sortLocationList(list) {
-      list.sort(function(a, b) {
-        var statusA = getTimerStatus(a);
-        var statusB = getTimerStatus(b);
-        if (statusA !== statusB) return statusA - statusB;
-        if (statusA === 0) return getSortValue(a) - getSortValue(b);
-        return a.name.localeCompare(b.name, 'zh-Hant');
-      });
-      return list;
-    }
-    function findLocation(id) { var i; for (i = 0; i < locations.length; i = i + 1) if (locations[i].id === id) return locations[i]; return null; }
+    function formatCountdown(ms) { var totalSeconds = Math.max(0, Math.floor(ms / 1000)); var minutes = Math.floor(totalSeconds / 60); var seconds = totalSeconds % 60; return minutes + '分 ' + pad2(seconds) + '秒'; }
+    function getTimerStatus(location) { if (!location.respawnTime) return 2; if (location.respawnTime.getTime() <= new Date().getTime()) return 1; return 0; }
+    function getSortValue(location) { if (!location.respawnTime) return 9007199254740991; return Math.max(0, location.respawnTime.getTime() - new Date().getTime()); }
+    function sortLocationList(list) { list.sort(function(a, b) { var statusA = getTimerStatus(a), statusB = getTimerStatus(b); if (statusA !== statusB) return statusA - statusB; if (statusA === 0) return getSortValue(a) - getSortValue(b); return a.name.localeCompare(b.name, 'zh-Hant'); }); return list; }
 
-    function safeStorageAvailable() {
-      try { window.localStorage.setItem('__storage_test__', '1'); window.localStorage.removeItem('__storage_test__'); return true; }
-      catch (e) { return false; }
-    }
-    function serializeLocations() {
-      var data = [], i;
-      for (i = 0; i < locations.length; i = i + 1) {
-        data.push({ id: locations[i].id, type: locations[i].type, name: locations[i].name, inputTime: locations[i].inputTime, finishTime: locations[i].finishTime ? locations[i].finishTime.getTime() : null, respawnTime: locations[i].respawnTime ? locations[i].respawnTime.getTime() : null, direction: locations[i].direction || '', peopleCount: locations[i].peopleCount || '', notifiedOneMinute: locations[i].notifiedOneMinute ? true : false });
+    function safeStorageAvailable() { try { window.localStorage.setItem('__storage_test__', '1'); window.localStorage.removeItem('__storage_test__'); return true; } catch (e) { return false; } }
+    function serializeLocationList(list) { var data = [], i; for (i = 0; i < list.length; i = i + 1) data.push({ id: list[i].id, type: list[i].type, name: list[i].name, inputTime: list[i].inputTime, finishTime: list[i].finishTime ? list[i].finishTime.getTime() : null, respawnTime: list[i].respawnTime ? list[i].respawnTime.getTime() : null, direction: list[i].direction || '', peopleCount: list[i].peopleCount || '', notifiedOneMinute: list[i].notifiedOneMinute ? true : false }); return data; }
+    function hydrateLocations(rawLocations) { var result = [], i, item; if (!rawLocations || !rawLocations.length) return result; for (i = 0; i < rawLocations.length; i = i + 1) { item = rawLocations[i]; result.push({ id: item.id || ('loc_' + new Date().getTime() + '_' + i), type: item.type === '關精準位置' ? '關精準位置' : '正常位置', name: item.name || '未命名地點', inputTime: item.inputTime || '', finishTime: item.finishTime ? new Date(item.finishTime) : null, respawnTime: item.respawnTime ? new Date(item.respawnTime) : null, direction: item.direction || '', isEditingName: false, isEditingDirection: false, peopleCount: item.peopleCount || '', isEditingPeople: false, notifiedOneMinute: item.notifiedOneMinute ? true : false }); } return result; }
+    function serializeState() { var exportScenes = [], i; for (i = 0; i < scenes.length; i = i + 1) exportScenes.push({ id: scenes[i].id, name: scenes[i].name, locations: serializeLocationList(scenes[i].locations) }); return { version: 4, exportedAt: new Date().toISOString(), locationCounter: locationCounter, sceneCounter: sceneCounter, currentSceneId: currentSceneId, scenes: exportScenes }; }
+    function hydrateState(data) {
+      var i;
+      var newId;
+      if (data && data.scenes && data.scenes.length) {
+        scenes = [];
+        for (i = 0; i < data.scenes.length && i < MAX_SCENES; i = i + 1) {
+          newId = i === 0 ? 'scene_1' : (data.scenes[i].id || ('scene_' + (i + 1)));
+          scenes.push({
+            id: newId,
+            name: data.scenes[i].name || (i === 0 ? '預設場景' : ('場景' + (i + 1))),
+            locations: hydrateLocations(data.scenes[i].locations || [])
+          });
+        }
+        if (!scenes.length) return false;
+        scenes[0].id = 'scene_1';
+        if (!data.currentSceneId || data.currentSceneId === scenes[0].id || !sceneExists(data.currentSceneId)) {
+          currentSceneId = scenes[0].id;
+        } else {
+          currentSceneId = data.currentSceneId;
+        }
+        if (!sceneExists(currentSceneId)) currentSceneId = scenes[0].id;
+        locationCounter = data.locationCounter || 1;
+        sceneCounter = Math.max(data.sceneCounter || 2, scenes.length + 1);
+        saveState();
+        return true;
       }
-      return { version: 2, exportedAt: new Date().toISOString(), locationCounter: locationCounter, locations: data };
-    }
-    function hydrateLocations(rawLocations) {
-      var result = [], i, item;
-      if (!rawLocations || !rawLocations.length) return result;
-      for (i = 0; i < rawLocations.length; i = i + 1) {
-        item = rawLocations[i];
-        result.push({ id: item.id || ('loc_' + new Date().getTime() + '_' + i), type: item.type === '關精準位置' ? '關精準位置' : '正常位置', name: item.name || '未命名地點', inputTime: item.inputTime || '', finishTime: item.finishTime ? new Date(item.finishTime) : null, respawnTime: item.respawnTime ? new Date(item.respawnTime) : null, direction: item.direction || '', isEditingName: false, isEditingDirection: false, peopleCount: item.peopleCount || '', isEditingPeople: false, notifiedOneMinute: item.notifiedOneMinute ? true : false });
+      if (data && data.locations) {
+        scenes = [{ id: 'scene_1', name: '預設場景', locations: hydrateLocations(data.locations) }];
+        currentSceneId = 'scene_1';
+        locationCounter = data.locationCounter || scenes[0].locations.length + 1;
+        sceneCounter = 2;
+        saveState();
+        return true;
       }
-      return result;
-    }
-    function saveState() { if (!safeStorageAvailable()) return; try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeLocations())); } catch (e) { console.warn('無法儲存暫存資料', e); } }
-    function loadState() {
-      var text, data;
-      if (!safeStorageAvailable()) return false;
-      try {
-        text = window.localStorage.getItem(STORAGE_KEY) || window.localStorage.getItem('pikmin_mushroom_timer_v1');
-        if (!text) return false;
-        data = JSON.parse(text);
-        if (!data || !data.locations) return false;
-        locations = hydrateLocations(data.locations);
-        locationCounter = data.locationCounter || locations.length + 1;
-        return locations.length > 0;
-      } catch (e) { console.warn('無法讀取暫存資料', e); return false; }
+      return false;
     }
 
-    function addLocation(type) { var input = document.getElementById('newLocationName'), customName = input.value.trim(); if (!customName) { alert('請先輸入地點名稱'); return; } locations.push(createLocation(type, customName)); input.value = ''; saveState(); render(); }
-    function deleteLocation(id) { var next = [], i; for (i = 0; i < locations.length; i = i + 1) if (locations[i].id !== id) next.push(locations[i]); locations = next; saveState(); render(); }
+    function sceneExists(id) {
+      var i;
+      for (i = 0; i < scenes.length; i = i + 1) {
+        if (scenes[i].id === id) return true;
+      }
+      return false;
+    }
+
+    function saveState() { if (!safeStorageAvailable()) return; try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState())); } catch (e) { console.warn('無法儲存暫存資料', e); } }
+    function loadState() { var text, data, i; if (!safeStorageAvailable()) return false; try { text = window.localStorage.getItem(STORAGE_KEY); if (!text) { for (i = 0; i < OLD_KEYS.length; i = i + 1) { text = window.localStorage.getItem(OLD_KEYS[i]); if (text) break; } } if (!text) return false; data = JSON.parse(text); return hydrateState(data); } catch (e) { console.warn('無法讀取暫存資料', e); return false; } }
+
+    function beginAddScene() {
+      if (scenes.length >= MAX_SCENES) {
+        alert('場景最多只能新增 3 個');
+        return;
+      }
+      editingSceneId = null;
+      isAddingScene = true;
+      renderSceneTabs();
+      setTimeout(function() {
+        var input = document.getElementById('newSceneName');
+        if (input) input.focus();
+      }, 0);
+    }
+
+    function cancelAddScene() {
+      isAddingScene = false;
+      renderSceneTabs();
+    }
+
+    function beginEditScene(sceneId) {
+      editingSceneId = sceneId;
+      isAddingScene = false;
+      renderSceneTabs();
+      setTimeout(function() {
+        var input = document.getElementById('editSceneName');
+        if (input) input.focus();
+      }, 0);
+    }
+
+    function cancelEditScene() {
+      editingSceneId = null;
+      renderSceneTabs();
+    }
+
+    function confirmEditScene(sceneId) {
+      var input = document.getElementById('editSceneName');
+      var name = input ? String(input.value).trim() : '';
+      var i;
+      if (!name) {
+        alert('場景名稱不可空白');
+        return;
+      }
+      for (i = 0; i < scenes.length; i = i + 1) {
+        if (scenes[i].id === sceneId) scenes[i].name = name;
+      }
+      editingSceneId = null;
+      saveState();
+      render();
+    }
+
+    function confirmAddScene() {
+      var input = document.getElementById('newSceneName');
+      var name = input ? String(input.value).trim() : '';
+      var scene;
+      if (!name) {
+        alert('場景名稱不可空白');
+        return;
+      }
+      if (scenes.length >= MAX_SCENES) {
+        alert('場景最多只能新增 3 個');
+        isAddingScene = false;
+        renderSceneTabs();
+        return;
+      }
+      scene = createScene(name, []);
+      scenes.push(scene);
+      currentSceneId = scene.id;
+      isAddingScene = false;
+      editingSceneId = null;
+      saveState();
+      render();
+    }
+
+    function deleteSceneById(sceneId) {
+      var targetScene = null;
+      var message;
+      var next = [];
+      var i;
+
+      if (scenes.length <= 1) {
+        alert('至少需保留一個場景');
+        return;
+      }
+
+      if (sceneId === 'scene_1' || (scenes[0] && scenes[0].id === sceneId)) {
+        alert('預設第1個場景不可刪除。若要清空內容，請使用右上方「清空」。');
+        return;
+      }
+
+      for (i = 0; i < scenes.length; i = i + 1) {
+        if (scenes[i].id === sceneId) targetScene = scenes[i];
+      }
+
+      if (!targetScene) {
+        alert('找不到要刪除的場景，請重新整理後再試。');
+        return;
+      }
+
+      message = [
+        '確定要刪除「' + targetScene.name + '」場景嗎？',
+        '',
+        '此場景內的所有地點與倒數資料都會刪除，而且刪除後無法回復。'
+      ].join(String.fromCharCode(10));
+
+      if (!window.confirm(message)) return;
+
+      for (i = 0; i < scenes.length; i = i + 1) {
+        if (scenes[i].id !== sceneId) next.push(scenes[i]);
+      }
+
+      scenes = next;
+      if (currentSceneId === sceneId || !sceneExists(currentSceneId)) currentSceneId = scenes[0].id;
+      isAddingScene = false;
+      saveState();
+      render();
+    }
+
+    function deleteScene() {
+      deleteSceneById(currentSceneId);
+    }
+    function switchScene(id) { currentSceneId = id; saveState(); render(); }
+
+    function addLocation(type) { var input = document.getElementById('newLocationName'), customName = input.value.trim(); if (!customName) { alert('請先輸入地點名稱'); return; } getLocations().push(createLocation(type, customName)); input.value = ''; saveState(); render(); }
+    function deleteLocation(id) { var list = getLocations(), next = [], i; for (i = 0; i < list.length; i = i + 1) if (list[i].id !== id) next.push(list[i]); setLocations(next); saveState(); render(); }
     function editLocationName(id) { var location = findLocation(id), input; if (!location) return; location.isEditingName = true; render(); input = document.getElementById('name-' + id); if (input) input.focus(); }
     function cancelEditLocationName(id) { var location = findLocation(id); if (!location) return; location.isEditingName = false; render(); }
     function updateLocationName(id) { var location = findLocation(id), input, newName; if (!location) return; input = document.getElementById('name-' + id); newName = input.value.trim(); if (!newName) { alert('地點名稱不可空白'); return; } location.name = newName; location.isEditingName = false; saveState(); render(); }
@@ -356,297 +452,249 @@
     function editPeople(id) { var location = findLocation(id), input; if (!location) return; location.isEditingPeople = !location.isEditingPeople; render(); input = document.getElementById('people-' + id); if (input) input.focus(); }
     function updatePeople(id) { var location = findLocation(id), input, value; if (!location) return; input = document.getElementById('people-' + id); value = input.value.trim(); if (value && (!/^\d+$/.test(value) || Number(value) < 0)) { alert('人數請輸入數字'); return; } location.peopleCount = value; location.isEditingPeople = false; saveState(); render(); }
     function clearPeople(id) { var location = findLocation(id); if (!location) return; location.peopleCount = ''; location.isEditingPeople = false; saveState(); render(); }
-    function startOrClearTimer(id) {
-      var location = findLocation(id), input, remainingSeconds, now, text;
-      if (!location) return;
-      input = document.getElementById('time-' + id);
-      text = input.value.trim();
-      if (!text) { location.inputTime = ''; location.finishTime = null; location.respawnTime = null; location.notifiedOneMinute = false; saveState(); render(); return; }
-      remainingSeconds = parseTime(text);
-      if (remainingSeconds === null) { alert('請輸入正確格式，例如 12:30、1230 或 200'); return; }
-      now = new Date();
-      location.inputTime = normalizeTimeLabel(text);
-      location.finishTime = new Date(now.getTime() + remainingSeconds * 1000);
-      location.respawnTime = new Date(location.finishTime.getTime() + 5 * 60 * 1000);
-      location.notifiedOneMinute = false;
-      input.value = '';
-      saveState();
-      render();
-    }
+    function startOrClearTimer(id) { var location = findLocation(id), input, remainingSeconds, now, text; if (!location) return; input = document.getElementById('time-' + id); text = input.value.trim(); if (!text) { location.inputTime = ''; location.finishTime = null; location.respawnTime = null; location.notifiedOneMinute = false; saveState(); render(); return; } remainingSeconds = parseTime(text); if (remainingSeconds === null) { alert('請輸入正確格式，例如 12:30、1230 或 200'); return; } now = new Date(); location.inputTime = normalizeTimeLabel(text); location.finishTime = new Date(now.getTime() + remainingSeconds * 1000); location.respawnTime = new Date(location.finishTime.getTime() + 5 * 60 * 1000); location.notifiedOneMinute = false; input.value = ''; saveState(); render(); }
 
     function clearElement(element) { while (element.firstChild) element.removeChild(element.firstChild); }
     function makeButton(text, className, onClick) { var button = document.createElement('button'); button.type = 'button'; button.innerHTML = text; if (className) button.className = className; button.onclick = onClick; return button; }
     function getDirectionArrow(direction) { var map = { '上': '↑', '下': '↓', '左': '←', '右': '→', '右上': '↗', '左上': '↖', '右下': '↘', '左下': '↙' }; return map[direction] || direction; }
     function getDirectionButtons() { return [{ value: '左上', label: '↖' }, { value: '上', label: '↑' }, { value: '右上', label: '↗' }, { value: '左', label: '←' }, { value: '', label: '・' }, { value: '右', label: '→' }, { value: '左下', label: '↙' }, { value: '下', label: '↓' }, { value: '右下', label: '↘' }]; }
 
-    function render() {
-      var list = document.getElementById('locationList');
-      var activeLocations = [];
+    function render() { renderSceneTabs(); var list = document.getElementById('locationList'), activeLocations = [], source = getLocations(), i; clearElement(list); for (i = 0; i < source.length; i = i + 1) if (getTimerStatus(source[i]) === 0) activeLocations.push(source[i]); if (activeLocations.length) { sortLocationList(activeLocations); renderActiveGroup(list, activeLocations); } renderInactiveGroup(list, '正常位置'); renderInactiveGroup(list, '關精準位置'); updateAllCountdowns(); }
+    function renderSceneTabs() {
+      renderSceneManager();
+      var bar = document.getElementById('sceneBar');
       var i;
+      var wrap;
+      var btn;
+      var xBtn;
+      var editBtn;
+      var addButton;
+      var input;
+      var saveButton;
+      var cancelButton;
 
-      clearElement(list);
+      clearElement(bar);
 
-      for (i = 0; i < locations.length; i = i + 1) {
-        if (getTimerStatus(locations[i]) === 0) activeLocations.push(locations[i]);
+      for (i = 0; i < scenes.length; i = i + 1) {
+        (function(scene, index) {
+          wrap = document.createElement('span');
+          wrap.className = 'scene-tab-wrap' + (scene.id === currentSceneId ? ' active' : '');
+
+          if (editingSceneId === scene.id) {
+            input = document.createElement('input');
+            input.id = 'editSceneName';
+            input.value = scene.name;
+            input.style.width = '110px';
+            input.style.flex = '0 0 auto';
+            input.style.padding = '7px 10px';
+            input.style.fontSize = '13px';
+            input.onkeydown = function(event) {
+              event = event || window.event;
+              if (event.key === 'Enter' || event.keyCode === 13) confirmEditScene(scene.id);
+              if (event.key === 'Escape' || event.keyCode === 27) cancelEditScene();
+            };
+            wrap.appendChild(input);
+
+            saveButton = document.createElement('button');
+            saveButton.type = 'button';
+            saveButton.className = 'scene-tab-edit';
+            saveButton.textContent = '✓';
+            saveButton.onclick = function(event) {
+              if (event) event.preventDefault();
+              confirmEditScene(scene.id);
+              return false;
+            };
+            saveButton.ontouchend = saveButton.onclick;
+            wrap.appendChild(saveButton);
+
+            cancelButton = document.createElement('button');
+            cancelButton.type = 'button';
+            cancelButton.className = 'scene-tab-delete';
+            cancelButton.textContent = '取消';
+            cancelButton.style.width = 'auto';
+            cancelButton.style.padding = '0 8px';
+            cancelButton.style.borderRadius = '999px';
+            cancelButton.onclick = function(event) {
+              if (event) event.preventDefault();
+              cancelEditScene();
+              return false;
+            };
+            cancelButton.ontouchend = cancelButton.onclick;
+            wrap.appendChild(cancelButton);
+
+            
+          } else {
+            btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'scene-tab' + (scene.id === currentSceneId ? ' active' : '');
+            btn.textContent = scene.name;
+            btn.onclick = function(event) {
+              if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              switchScene(scene.id);
+              return false;
+            };
+            btn.ontouchend = btn.onclick;
+            wrap.appendChild(btn);
+
+            editBtn = document.createElement('button');
+            editBtn.type = 'button';
+            editBtn.className = 'scene-tab-edit';
+            editBtn.textContent = '✎';
+            editBtn.title = '修改場景名稱';
+            editBtn.onclick = function(event) {
+              if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+              beginEditScene(scene.id);
+              return false;
+            };
+            editBtn.ontouchend = editBtn.onclick;
+            wrap.appendChild(editBtn);
+
+          }
+
+          bar.appendChild(wrap);
+        }(scenes[i], i));
       }
 
-      if (activeLocations.length) {
-        sortLocationList(activeLocations);
-        renderActiveGroup(list, activeLocations);
+      if (isAddingScene) {
+        input = document.createElement('input');
+        input.id = 'newSceneName';
+        input.placeholder = '新場景名稱';
+        input.style.width = '120px';
+        input.style.flex = '0 0 auto';
+        input.style.padding = '7px 10px';
+        input.style.fontSize = '13px';
+        input.onkeydown = function(event) {
+          event = event || window.event;
+          if (event.key === 'Enter' || event.keyCode === 13) confirmAddScene();
+          if (event.key === 'Escape' || event.keyCode === 27) cancelAddScene();
+        };
+        bar.appendChild(input);
+
+        saveButton = document.createElement('button');
+        saveButton.type = 'button';
+        saveButton.className = 'scene-action';
+        saveButton.textContent = '確定';
+        saveButton.onclick = function(event) {
+          if (event) event.preventDefault();
+          confirmAddScene();
+          return false;
+        };
+        saveButton.ontouchend = saveButton.onclick;
+        bar.appendChild(saveButton);
+
+        cancelButton = document.createElement('button');
+        cancelButton.type = 'button';
+        cancelButton.className = 'scene-action delete';
+        cancelButton.textContent = '取消';
+        cancelButton.onclick = function(event) {
+          if (event) event.preventDefault();
+          cancelAddScene();
+          return false;
+        };
+        cancelButton.ontouchend = cancelButton.onclick;
+        bar.appendChild(cancelButton);
+      } else if (scenes.length < MAX_SCENES) {
+        addButton = document.createElement('button');
+        addButton.type = 'button';
+        addButton.className = 'scene-action';
+        addButton.textContent = '＋新增';
+        addButton.onclick = function(event) {
+          if (event) event.preventDefault();
+          beginAddScene();
+          return false;
+        };
+        addButton.ontouchend = addButton.onclick;
+        bar.appendChild(addButton);
       }
+    }
+    function renderSceneManager() {
+      var bar = document.getElementById('sceneManageBar');
+      var current = getCurrentScene();
+      var btn;
+      clearElement(bar);
 
-      renderInactiveGroup(list, '正常位置');
-      renderInactiveGroup(list, '關精準位置');
+      if (!current) return;
 
-      updateAllCountdowns();
+      if (current.id !== 'scene_1') {
+        btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'scene-action delete';
+        btn.textContent = '刪除此場景';
+        btn.style.background = '#e53935';
+        btn.style.color = '#fff';
+        btn.onclick = function() {
+          var ok;
+          var next = [];
+          var i;
+
+          ok = window.confirm('確定刪除場景「' + current.name + '」？');
+          if (!ok) return false;
+
+          for (i = 0; i < scenes.length; i = i + 1) {
+            if (scenes[i].id !== current.id) next.push(scenes[i]);
+          }
+
+          scenes = next;
+          currentSceneId = 'scene_1';
+          editingSceneId = null;
+          isAddingScene = false;
+          saveState();
+          render();
+          return false;
+        };
+        bar.appendChild(btn);
+      }
     }
 
-    function renderActiveGroup(container, activeLocations) {
-      var groupBlock;
-      var groupTitle;
-      var dot;
-      var count;
-      var i;
-
-      groupBlock = document.createElement('div');
-      groupBlock.className = 'group-block';
-
-      groupTitle = document.createElement('div');
-      groupTitle.className = 'group-title';
-
-      dot = document.createElement('span');
-      dot.className = 'group-dot';
-      dot.style.background = '#ff9800';
-      groupTitle.appendChild(dot);
-
-      groupTitle.appendChild(document.createTextNode('正在倒數'));
-
-      count = document.createElement('span');
-      count.className = 'group-count';
-      count.appendChild(document.createTextNode(activeLocations.length + ' 個進行中'));
-      groupTitle.appendChild(count);
-
-      groupBlock.appendChild(groupTitle);
-
-      for (i = 0; i < activeLocations.length; i = i + 1) {
-        groupBlock.appendChild(createLocationCard(activeLocations[i]));
-      }
-
-      container.appendChild(groupBlock);
-    }
-
-    function renderInactiveGroup(container, type) {
-      var groupLocations = [];
-      var groupBlock;
-      var groupTitle;
-      var dot;
-      var count;
-      var i;
-      for (i = 0; i < locations.length; i = i + 1) {
-        if (locations[i].type === type && getTimerStatus(locations[i]) !== 0) groupLocations.push(locations[i]);
-      }
-      if (!groupLocations.length) return;
-      sortLocationList(groupLocations);
-
-      groupBlock = document.createElement('div');
-      groupBlock.className = 'group-block';
-
-      groupTitle = document.createElement('div');
-      groupTitle.className = 'group-title';
-      dot = document.createElement('span');
-      dot.className = 'group-dot' + (type === '關精準位置' ? ' precise-off' : '');
-      groupTitle.appendChild(dot);
-      groupTitle.appendChild(document.createTextNode(type + '（待處理）'));
-      count = document.createElement('span');
-      count.className = 'group-count';
-      count.appendChild(document.createTextNode(groupLocations.length + ' 個地點'));
-      groupTitle.appendChild(count);
-      groupBlock.appendChild(groupTitle);
-
-      for (i = 0; i < groupLocations.length; i = i + 1) {
-        groupBlock.appendChild(createLocationCard(groupLocations[i]));
-      }
-      container.appendChild(groupBlock);
-    }
+    function renderActiveGroup(container, activeLocations) { var groupBlock = document.createElement('div'), groupTitle = document.createElement('div'), dot = document.createElement('span'), count = document.createElement('span'), i; groupBlock.className = 'group-block'; groupTitle.className = 'group-title'; dot.className = 'group-dot'; dot.style.background = '#ff9800'; groupTitle.appendChild(dot); groupTitle.appendChild(document.createTextNode('正在倒數')); count.className = 'group-count'; count.appendChild(document.createTextNode(activeLocations.length + ' 個進行中')); groupTitle.appendChild(count); groupBlock.appendChild(groupTitle); for (i = 0; i < activeLocations.length; i = i + 1) groupBlock.appendChild(createLocationCard(activeLocations[i])); container.appendChild(groupBlock); }
+    function renderInactiveGroup(container, type) { var source = getLocations(), groupLocations = [], groupBlock, groupTitle, dot, count, i; for (i = 0; i < source.length; i = i + 1) if (source[i].type === type && getTimerStatus(source[i]) !== 0) groupLocations.push(source[i]); if (!groupLocations.length) return; sortLocationList(groupLocations); groupBlock = document.createElement('div'); groupBlock.className = 'group-block'; groupTitle = document.createElement('div'); groupTitle.className = 'group-title'; dot = document.createElement('span'); dot.className = 'group-dot' + (type === '關精準位置' ? ' precise-off' : ''); groupTitle.appendChild(dot); groupTitle.appendChild(document.createTextNode(type + '（待處理）')); count = document.createElement('span'); count.className = 'group-count'; count.appendChild(document.createTextNode(groupLocations.length + ' 個地點')); groupTitle.appendChild(count); groupBlock.appendChild(groupTitle); for (i = 0; i < groupLocations.length; i = i + 1) groupBlock.appendChild(createLocationCard(groupLocations[i])); container.appendChild(groupBlock); }
 
     function createLocationCard(location) {
       var outer = document.createElement('div'), deleteAction = document.createElement('div'), card = document.createElement('div'), grid = document.createElement('div');
       var main = document.createElement('div'), timer = document.createElement('div'), deleteBlock = document.createElement('div');
       var titleRow, title, metaRow, directionDisplay, peopleDisplay, editRow, nameInput, peoplePopover, peopleRow, peopleInput, directionPopover, directionRow, directionButtons, directionButton;
       var inputRow, timeInput, statusRow, inputSpan, finishSpan, respawnRow, respawnSpan, countdownSpan, i;
-
-      outer.className = 'swipe-item';
-      outer.id = 'outer-' + location.id;
-      deleteAction.className = 'swipe-delete';
-      deleteAction.innerHTML = '刪除';
-      deleteAction.onclick = function() { deleteLocation(location.id); };
-      outer.appendChild(deleteAction);
-
-      card.className = 'location-card' + (location.type === '關精準位置' ? ' precise-off' : '');
-      card.id = 'location-' + location.id;
-      addSwipeEvents(card, outer);
-      outer.appendChild(card);
-
-      grid.className = 'card-grid';
-      card.appendChild(grid);
-      main.className = 'main-block';
-      timer.className = 'timer-block';
-      deleteBlock.className = 'delete-block';
-      grid.appendChild(main);
-      grid.appendChild(timer);
-      grid.appendChild(deleteBlock);
-
-      if (location.isEditingName) {
-        editRow = document.createElement('div'); editRow.className = 'inline-edit-row'; main.appendChild(editRow);
-        nameInput = document.createElement('input'); nameInput.id = 'name-' + location.id; nameInput.value = location.name; nameInput.placeholder = '修改地點名稱';
-        nameInput.onkeydown = function(event) { event = event || window.event; if (event.key === 'Enter' || event.keyCode === 13) updateLocationName(location.id); if (event.key === 'Escape' || event.keyCode === 27) cancelEditLocationName(location.id); };
-        editRow.appendChild(nameInput); editRow.appendChild(makeButton('儲存', 'save-btn', function() { updateLocationName(location.id); })); editRow.appendChild(makeButton('取消', 'cancel-btn', function() { cancelEditLocationName(location.id); }));
-      } else {
-        titleRow = document.createElement('div'); titleRow.className = 'title-row'; main.appendChild(titleRow);
-        title = document.createElement('div'); title.className = 'location-name'; title.appendChild(document.createTextNode('📍 ' + location.name)); titleRow.appendChild(title);
-        titleRow.appendChild(makeButton('✎', 'edit-icon-btn', function() { editLocationName(location.id); }));
-        metaRow = document.createElement('div'); metaRow.className = 'meta-row'; main.appendChild(metaRow);
-        directionDisplay = document.createElement('span'); directionDisplay.className = 'direction-display' + (location.direction ? '' : ' empty'); directionDisplay.appendChild(document.createTextNode(location.direction ? getDirectionArrow(location.direction) : '方位')); metaRow.appendChild(directionDisplay);
-        metaRow.appendChild(makeButton('↕', 'edit-icon-btn', function() { editDirection(location.id); }));
-        peopleDisplay = document.createElement('span'); peopleDisplay.className = 'people-display' + (location.peopleCount ? '' : ' empty'); peopleDisplay.appendChild(document.createTextNode(location.peopleCount ? '👤' + location.peopleCount : '👤人數')); metaRow.appendChild(peopleDisplay);
-        metaRow.appendChild(makeButton('✎', 'edit-icon-btn', function() { editPeople(location.id); }));
-        countdownSpan = document.createElement('span'); countdownSpan.className = 'countdown-inline waiting'; countdownSpan.id = 'countdown-' + location.id; countdownSpan.appendChild(document.createTextNode('尚未設定')); metaRow.appendChild(countdownSpan);
-      }
-
-      if (location.isEditingPeople) {
-        peoplePopover = document.createElement('div'); peoplePopover.className = 'people-popover'; main.appendChild(peoplePopover);
-        peopleRow = document.createElement('div'); peopleRow.className = 'people-edit-row'; peoplePopover.appendChild(peopleRow);
-        peopleInput = document.createElement('input'); peopleInput.id = 'people-' + location.id; peopleInput.placeholder = '人數'; peopleInput.value = location.peopleCount;
-        peopleInput.onkeydown = function(event) { event = event || window.event; if (event.key === 'Enter' || event.keyCode === 13) updatePeople(location.id); if (event.key === 'Escape' || event.keyCode === 27) clearPeople(location.id); };
-        peopleRow.appendChild(peopleInput); peopleRow.appendChild(makeButton('確定', 'save-btn', function() { updatePeople(location.id); })); peopleRow.appendChild(makeButton('清除', 'cancel-btn', function() { clearPeople(location.id); }));
-      }
-      if (location.isEditingDirection) {
-        directionPopover = document.createElement('div'); directionPopover.className = 'direction-popover'; main.appendChild(directionPopover);
-        directionRow = document.createElement('div'); directionRow.className = 'direction-row'; directionPopover.appendChild(directionRow);
-        directionButtons = getDirectionButtons();
-        for (i = 0; i < directionButtons.length; i = i + 1) {
-          (function(item) { directionButton = makeButton(item.label, 'direction-btn' + (location.direction === item.value ? ' active' : ''), function() { if (item.value) setDirection(location.id, item.value); }); directionButton.title = item.value || '不選方位'; if (!item.value) { directionButton.style.visibility = 'hidden'; directionButton.disabled = true; } directionRow.appendChild(directionButton); }(directionButtons[i]));
-        }
-        directionPopover.appendChild(makeButton('清除方位', 'cancel-btn', function() { clearDirection(location.id); }));
-      }
-
-      inputRow = document.createElement('div'); inputRow.className = 'input-row'; timer.appendChild(inputRow);
-      timeInput = document.createElement('input'); timeInput.id = 'time-' + location.id; timeInput.placeholder = '剩餘 1230/12:30';
-      timeInput.onkeydown = function(event) { event = event || window.event; if (event.key === 'Enter' || event.keyCode === 13) startOrClearTimer(location.id); };
-      inputRow.appendChild(timeInput); inputRow.appendChild(makeButton('起算/清空', 'start-btn', function() { startOrClearTimer(location.id); }));
-      statusRow = document.createElement('div'); statusRow.className = 'status-row'; statusRow.appendChild(document.createTextNode('剩 ')); inputSpan = document.createElement('span'); inputSpan.id = 'input-' + location.id; statusRow.appendChild(inputSpan); statusRow.appendChild(document.createTextNode('｜完 ')); finishSpan = document.createElement('span'); finishSpan.id = 'finish-' + location.id; statusRow.appendChild(finishSpan); timer.appendChild(statusRow);
-      respawnRow = document.createElement('div'); respawnRow.className = 'respawn-row'; respawnRow.appendChild(document.createTextNode('預計重生：')); respawnSpan = document.createElement('span'); respawnSpan.id = 'respawn-' + location.id; respawnRow.appendChild(respawnSpan); timer.appendChild(respawnRow);
-      deleteBlock.appendChild(makeButton('刪除', 'desktop-delete', function() { deleteLocation(location.id); }));
-      return outer;
+      outer.className = 'swipe-item'; outer.id = 'outer-' + location.id;
+      deleteAction.className = 'swipe-delete'; deleteAction.innerHTML = '刪除'; deleteAction.onclick = function() { deleteLocation(location.id); }; outer.appendChild(deleteAction);
+      card.className = 'location-card' + (location.type === '關精準位置' ? ' precise-off' : ''); card.id = 'location-' + location.id; addSwipeEvents(card, outer); outer.appendChild(card);
+      grid.className = 'card-grid'; card.appendChild(grid); main.className = 'main-block'; timer.className = 'timer-block'; deleteBlock.className = 'delete-block'; grid.appendChild(main); grid.appendChild(timer); grid.appendChild(deleteBlock);
+      if (location.isEditingName) { editRow = document.createElement('div'); editRow.className = 'inline-edit-row'; main.appendChild(editRow); nameInput = document.createElement('input'); nameInput.id = 'name-' + location.id; nameInput.value = location.name; nameInput.placeholder = '修改地點名稱'; nameInput.onkeydown = function(event) { event = event || window.event; if (event.key === 'Enter' || event.keyCode === 13) updateLocationName(location.id); if (event.key === 'Escape' || event.keyCode === 27) cancelEditLocationName(location.id); }; editRow.appendChild(nameInput); editRow.appendChild(makeButton('儲存', 'save-btn', function() { updateLocationName(location.id); })); editRow.appendChild(makeButton('取消', 'cancel-btn', function() { cancelEditLocationName(location.id); })); }
+      else { titleRow = document.createElement('div'); titleRow.className = 'title-row'; main.appendChild(titleRow); title = document.createElement('div'); title.className = 'location-name'; title.appendChild(document.createTextNode('📍 ' + location.name)); titleRow.appendChild(title); titleRow.appendChild(makeButton('✎', 'edit-icon-btn', function() { editLocationName(location.id); })); metaRow = document.createElement('div'); metaRow.className = 'meta-row'; main.appendChild(metaRow); directionDisplay = document.createElement('span'); directionDisplay.className = 'direction-display' + (location.direction ? '' : ' empty'); directionDisplay.appendChild(document.createTextNode(location.direction ? getDirectionArrow(location.direction) : '方位')); metaRow.appendChild(directionDisplay); metaRow.appendChild(makeButton('↕', 'edit-icon-btn', function() { editDirection(location.id); })); peopleDisplay = document.createElement('span'); peopleDisplay.className = 'people-display' + (location.peopleCount ? '' : ' empty'); peopleDisplay.appendChild(document.createTextNode(location.peopleCount ? '👤' + location.peopleCount : '👤人數')); metaRow.appendChild(peopleDisplay); metaRow.appendChild(makeButton('✎', 'edit-icon-btn', function() { editPeople(location.id); })); countdownSpan = document.createElement('span'); countdownSpan.className = 'countdown-inline waiting'; countdownSpan.id = 'countdown-' + location.id; countdownSpan.appendChild(document.createTextNode('尚未設定')); metaRow.appendChild(countdownSpan); }
+      if (location.isEditingPeople) { peoplePopover = document.createElement('div'); peoplePopover.className = 'people-popover'; main.appendChild(peoplePopover); peopleRow = document.createElement('div'); peopleRow.className = 'people-edit-row'; peoplePopover.appendChild(peopleRow); peopleInput = document.createElement('input'); peopleInput.id = 'people-' + location.id; peopleInput.placeholder = '人數'; peopleInput.value = location.peopleCount; peopleInput.onkeydown = function(event) { event = event || window.event; if (event.key === 'Enter' || event.keyCode === 13) updatePeople(location.id); if (event.key === 'Escape' || event.keyCode === 27) clearPeople(location.id); }; peopleRow.appendChild(peopleInput); peopleRow.appendChild(makeButton('確定', 'save-btn', function() { updatePeople(location.id); })); peopleRow.appendChild(makeButton('清除', 'cancel-btn', function() { clearPeople(location.id); })); }
+      if (location.isEditingDirection) { directionPopover = document.createElement('div'); directionPopover.className = 'direction-popover'; main.appendChild(directionPopover); directionRow = document.createElement('div'); directionRow.className = 'direction-row'; directionPopover.appendChild(directionRow); directionButtons = getDirectionButtons(); for (i = 0; i < directionButtons.length; i = i + 1) { (function(item) { directionButton = makeButton(item.label, 'direction-btn' + (location.direction === item.value ? ' active' : ''), function() { if (item.value) setDirection(location.id, item.value); }); directionButton.title = item.value || '不選方位'; if (!item.value) { directionButton.style.visibility = 'hidden'; directionButton.disabled = true; } directionRow.appendChild(directionButton); }(directionButtons[i])); } directionPopover.appendChild(makeButton('清除方位', 'cancel-btn', function() { clearDirection(location.id); })); }
+      inputRow = document.createElement('div'); inputRow.className = 'input-row'; timer.appendChild(inputRow); timeInput = document.createElement('input'); timeInput.id = 'time-' + location.id; timeInput.placeholder = '剩餘 1230/12:30'; timeInput.onkeydown = function(event) { event = event || window.event; if (event.key === 'Enter' || event.keyCode === 13) startOrClearTimer(location.id); }; inputRow.appendChild(timeInput); inputRow.appendChild(makeButton('起算/清空', 'start-btn', function() { startOrClearTimer(location.id); })); statusRow = document.createElement('div'); statusRow.className = 'status-row'; statusRow.appendChild(document.createTextNode('剩 ')); inputSpan = document.createElement('span'); inputSpan.id = 'input-' + location.id; statusRow.appendChild(inputSpan); statusRow.appendChild(document.createTextNode('｜完 ')); finishSpan = document.createElement('span'); finishSpan.id = 'finish-' + location.id; statusRow.appendChild(finishSpan); timer.appendChild(statusRow); respawnRow = document.createElement('div'); respawnRow.className = 'respawn-row'; respawnRow.appendChild(document.createTextNode('預計重生：')); respawnSpan = document.createElement('span'); respawnSpan.id = 'respawn-' + location.id; respawnRow.appendChild(respawnSpan); timer.appendChild(respawnRow); deleteBlock.appendChild(makeButton('刪除', 'desktop-delete', function() { deleteLocation(location.id); })); return outer;
     }
+    function addSwipeEvents(card, outer) { card.ontouchstart = function(event) { if (!event.touches || !event.touches.length) return; swipeState.startX = event.touches[0].clientX; swipeState.startY = event.touches[0].clientY; swipeState.item = outer; }; card.ontouchend = function(event) { var touch, dx, dy, openItems, i; if (!swipeState.item || !event.changedTouches || !event.changedTouches.length) return; touch = event.changedTouches[0]; dx = touch.clientX - swipeState.startX; dy = touch.clientY - swipeState.startY; if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 45) { openItems = document.getElementsByClassName('swipe-item'); for (i = 0; i < openItems.length; i = i + 1) openItems[i].className = openItems[i].className.replace(' open', ''); if (dx < 0) outer.className = outer.className + ' open'; } swipeState.item = null; }; }
 
-    function addSwipeEvents(card, outer) {
-      card.ontouchstart = function(event) {
-        if (!event.touches || !event.touches.length) return;
-        swipeState.startX = event.touches[0].clientX;
-        swipeState.startY = event.touches[0].clientY;
-        swipeState.item = outer;
-      };
-      card.ontouchend = function(event) {
-        var touch, dx, dy, openItems, i;
-        if (!swipeState.item || !event.changedTouches || !event.changedTouches.length) return;
-        touch = event.changedTouches[0];
-        dx = touch.clientX - swipeState.startX;
-        dy = touch.clientY - swipeState.startY;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 45) {
-          openItems = document.getElementsByClassName('swipe-item');
-          for (i = 0; i < openItems.length; i = i + 1) openItems[i].className = openItems[i].className.replace(' open', '');
-          if (dx < 0) outer.className = outer.className + ' open';
-        }
-        swipeState.item = null;
-      };
-    }
+    function requestNotificationPermission() { if (!('Notification' in window)) { alert('這個瀏覽器或預覽環境不支援系統通知，仍可使用網頁倒數。正式網址請用 Chrome、Edge 或 Safari 測試。'); updateNotifyButton(); return; } if (Notification.permission === 'granted') { alert('提醒已啟用'); updateNotifyButton(); return; } if (Notification.permission === 'denied') { alert('目前通知未允許。若是在 ChatGPT 預覽、LINE 或 FB 內建瀏覽器，可能無法啟用；請用正式網址在 Chrome、Edge 或 Safari 開啟，並到瀏覽器網站設定允許通知。'); updateNotifyButton(); return; } Notification.requestPermission(function(permission) { if (permission === 'granted') alert('提醒已啟用，倒數剩 1 分鐘會通知。'); if (permission !== 'granted') alert('目前尚未允許通知，仍可使用網頁倒數。'); updateNotifyButton(); }); }
+    function updateNotifyButton() { var button = document.getElementById('notifyBtn'); if (!button) return; button.disabled = false; if (!('Notification' in window)) { button.innerHTML = '通知不支援'; return; } if (Notification.permission === 'granted') button.innerHTML = '提醒已啟用'; else if (Notification.permission === 'denied') button.innerHTML = '通知未允許'; else button.innerHTML = '啟用提醒'; }
+    function sendOneMinuteNotification(location) { var title, body; if (!('Notification' in window)) return; if (Notification.permission !== 'granted') return; title = '🍄 菇菇即將重生'; body = location.name + '｜' + location.type + String.fromCharCode(10) + '預計重生：' + formatClock(location.respawnTime); try { new Notification(title, { body: body, tag: 'pikmin-' + location.id, renotify: true }); } catch (e) { console.warn('通知送出失敗', e); } if (navigator.vibrate) navigator.vibrate([200, 80, 200]); }
+    function updateAllCountdowns() { var source = getLocations(), i, location, el, inputEl, finishEl, respawnEl, cardEl, diff; for (i = 0; i < source.length; i = i + 1) { location = source[i]; el = document.getElementById('countdown-' + location.id); inputEl = document.getElementById('input-' + location.id); finishEl = document.getElementById('finish-' + location.id); respawnEl = document.getElementById('respawn-' + location.id); cardEl = document.getElementById('location-' + location.id); if (inputEl) inputEl.innerHTML = location.inputTime || '尚未輸入'; if (finishEl) finishEl.innerHTML = formatClock(location.finishTime); if (respawnEl) respawnEl.innerHTML = formatClock(location.respawnTime); if (cardEl) cardEl.className = cardEl.className.replace(' warning-soon', ''); if (!el) continue; el.className = 'countdown-inline'; if (!location.respawnTime) { el.innerHTML = '尚未設定'; el.className = 'countdown-inline waiting'; continue; } diff = location.respawnTime.getTime() - new Date().getTime(); if (diff <= 0) { el.innerHTML = '✅ 已重生'; el.className = 'countdown-inline done'; } else { if (diff <= 60000) { if (cardEl && cardEl.className.indexOf('warning-soon') < 0) cardEl.className = cardEl.className + ' warning-soon'; if (!location.notifiedOneMinute) { sendOneMinuteNotification(location); location.notifiedOneMinute = true; saveState(); } } el.innerHTML = '倒數 ' + formatCountdown(diff); } } }
 
-    function requestNotificationPermission() {
-      if (!('Notification' in window)) {
-        alert('這個瀏覽器或預覽環境不支援系統通知，仍可使用網頁倒數。正式網址請用 Chrome、Edge 或 Safari 測試。');
-        updateNotifyButton();
-        return;
-      }
-      if (Notification.permission === 'granted') {
-        alert('提醒已啟用');
-        updateNotifyButton();
-        return;
-      }
-      if (Notification.permission === 'denied') {
-        alert('目前通知未允許。若是在 ChatGPT 預覽、LINE 或 FB 內建瀏覽器，可能無法啟用；請用正式網址在 Chrome、Edge 或 Safari 開啟，並到瀏覽器網站設定允許通知。');
-        updateNotifyButton();
-        return;
-      }
-      Notification.requestPermission(function(permission) {
-        if (permission === 'granted') alert('提醒已啟用，倒數剩 1 分鐘會通知。');
-        if (permission !== 'granted') alert('目前尚未允許通知，仍可使用網頁倒數。');
-        updateNotifyButton();
-      });
-    }
-
-    function updateNotifyButton() {
-      var button = document.getElementById('notifyBtn');
-      if (!button) return;
-      button.disabled = false;
-      if (!('Notification' in window)) {
-        button.innerHTML = '通知不支援';
-        return;
-      }
-      if (Notification.permission === 'granted') button.innerHTML = '提醒已啟用';
-      else if (Notification.permission === 'denied') button.innerHTML = '通知未允許';
-      else button.innerHTML = '啟用提醒';
-    }
-
-    function sendOneMinuteNotification(location) {
-      var title;
-      var body;
-      if (!('Notification' in window)) return;
-      if (Notification.permission !== 'granted') return;
-      title = '🍄 菇菇即將重生';
-      body = location.name + '｜' + location.type + '\n預計重生：' + formatClock(location.respawnTime);
-      try {
-        new Notification(title, {
-          body: body,
-          tag: 'pikmin-' + location.id,
-          renotify: true
-        });
-      } catch (e) {
-        console.warn('通知送出失敗', e);
-      }
-      if (navigator.vibrate) navigator.vibrate([200, 80, 200]);
-    }
-
-    function updateAllCountdowns() {
-      var i, location, el, inputEl, finishEl, respawnEl, diff;
-      for (i = 0; i < locations.length; i = i + 1) {
-        location = locations[i];
-        el = document.getElementById('countdown-' + location.id);
-        inputEl = document.getElementById('input-' + location.id);
-        finishEl = document.getElementById('finish-' + location.id);
-        respawnEl = document.getElementById('respawn-' + location.id);
-        if (inputEl) inputEl.innerHTML = location.inputTime || '尚未輸入';
-        if (finishEl) finishEl.innerHTML = formatClock(location.finishTime);
-        if (respawnEl) respawnEl.innerHTML = formatClock(location.respawnTime);
-        if (!el) continue;
-        el.className = 'countdown-inline';
-        if (!location.respawnTime) { el.innerHTML = '尚未設定'; el.className = 'countdown-inline waiting'; continue; }
-        diff = location.respawnTime.getTime() - new Date().getTime();
-        if (diff <= 0) { el.innerHTML = '✅ 已重生'; el.className = 'countdown-inline done'; }
-        else {
-          if (diff <= 60000 && !location.notifiedOneMinute) {
-            sendOneMinuteNotification(location);
-            location.notifiedOneMinute = true;
-            saveState();
-          }
-          el.innerHTML = '倒數 ' + formatCountdown(diff);
+    function exportData() { var data = serializeState(), json = JSON.stringify(data, null, 2), blob = new Blob([json], { type: 'application/json' }), url = URL.createObjectURL(blob), a = document.createElement('a'), dateText = new Date().toISOString().slice(0, 10); a.href = url; a.download = 'pikmin-timer-' + dateText + '.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
+    function importDataFromFile(file) { var reader = new FileReader(); reader.onload = function(event) { var data; try { data = JSON.parse(event.target.result); if (!hydrateState(data)) { alert('匯入檔案格式不正確'); return; } if (!confirm('匯入後會取代目前資料，確定要匯入嗎？')) return; saveState(); render(); alert('匯入完成'); } catch (e) { alert('匯入失敗，請確認是否為正確 JSON 檔'); } }; reader.readAsText(file, 'UTF-8'); }
+    function clearAllData() {
+      var i;
+      if (!confirm('確定要清空所有場景、地點與倒數資料嗎？')) return;
+      scenes = [{ id: 'scene_1', name: '預設場景', locations: [] }];
+      currentSceneId = 'scene_1';
+      locationCounter = 1;
+      sceneCounter = 2;
+      isAddingScene = false;
+      if (safeStorageAvailable()) {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState()));
+        for (i = 0; i < OLD_KEYS.length; i = i + 1) {
+          window.localStorage.removeItem(OLD_KEYS[i]);
         }
       }
+      render();
     }
-
-    function exportData() { var data = serializeLocations(), json = JSON.stringify(data, null, 2), blob = new Blob([json], { type: 'application/json' }), url = URL.createObjectURL(blob), a = document.createElement('a'), dateText = new Date().toISOString().slice(0, 10); a.href = url; a.download = 'pikmin-timer-' + dateText + '.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); }
-    function importDataFromFile(file) { var reader = new FileReader(); reader.onload = function(event) { var data, imported; try { data = JSON.parse(event.target.result); if (!data || !data.locations) { alert('匯入檔案格式不正確'); return; } imported = hydrateLocations(data.locations); if (!imported.length) { alert('匯入檔案沒有地點資料'); return; } if (!confirm('匯入後會取代目前地點資料，確定要匯入嗎？')) return; locations = imported; locationCounter = data.locationCounter || locations.length + 1; saveState(); render(); alert('匯入完成'); } catch (e) { alert('匯入失敗，請確認是否為正確 JSON 檔'); } }; reader.readAsText(file, 'UTF-8'); }
-    function clearAllData() { if (!confirm('確定要清空所有地點與倒數資料嗎？')) return; locations = []; locationCounter = 1; if (safeStorageAvailable()) { window.localStorage.removeItem(STORAGE_KEY); window.localStorage.removeItem('pikmin_mushroom_timer_v1'); } render(); }
 
     function runTests() {
       console.assert(parseTime('12:30') === 750, 'parseTime should parse 12:30');
@@ -657,27 +705,9 @@
       console.assert(normalizeTimeLabel('1230') === '12:30', 'normalizeTimeLabel should normalize 1230');
       console.assert(getDirectionButtons().length === 9, 'direction pad should have 9 cells');
       console.assert(hydrateLocations([{ name: '測試', type: '正常位置', respawnTime: 1000 }])[0].respawnTime instanceof Date, 'hydrateLocations should restore dates');
-      var activeTest = createLocation('正常位置', '倒數中');
-      activeTest.respawnTime = new Date(new Date().getTime() + 60000);
-      var doneTest = createLocation('正常位置', '已重生');
-      doneTest.respawnTime = new Date(new Date().getTime() - 60000);
-      var emptyTest = createLocation('正常位置', '未設定');
-      console.assert(getTimerStatus(activeTest) === 0, 'active timer should be status 0');
-      console.assert(getTimerStatus(doneTest) === 1, 'done timer should be status 1');
-      console.assert(getTimerStatus(emptyTest) === 2, 'empty timer should be status 2');
+      console.assert(MAX_SCENES === 3, 'MAX_SCENES should be 3');
     }
-
-    function init() {
-      document.getElementById('addNormalBtn').onclick = function() { addLocation('正常位置'); };
-      document.getElementById('addPreciseOffBtn').onclick = function() { addLocation('關精準位置'); };
-      document.getElementById('exportBtn').onclick = exportData;
-      document.getElementById('importBtn').onclick = function() { document.getElementById('importFile').click(); };
-      document.getElementById('notifyBtn').onclick = requestNotificationPermission;
-      document.getElementById('clearAllBtn').onclick = clearAllData;
-      document.getElementById('importFile').onchange = function(event) { var file = event.target.files && event.target.files[0]; if (file) importDataFromFile(file); event.target.value = ''; };
-      if (!loadState()) { locations = [createLocation('正常位置', 'A地點'), createLocation('關精準位置', 'B地點')]; saveState(); }
-      runTests(); render(); updateNotifyButton(); if (intervalId) clearInterval(intervalId); intervalId = setInterval(updateAllCountdowns, 1000);
-    }
+    function init() { document.getElementById('addNormalBtn').onclick = function() { addLocation('正常位置'); }; document.getElementById('addPreciseOffBtn').onclick = function() { addLocation('關精準位置'); }; document.getElementById('exportBtn').onclick = exportData; document.getElementById('importBtn').onclick = function() { document.getElementById('importFile').click(); }; document.getElementById('notifyBtn').onclick = requestNotificationPermission; document.getElementById('clearAllBtn').onclick = clearAllData; var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); if (!isMobile) document.getElementById('notifyBtn').style.display = 'inline-block'; document.getElementById('importFile').onchange = function(event) { var file = event.target.files && event.target.files[0]; if (file) importDataFromFile(file); event.target.value = ''; }; if (!loadState()) { scenes = [{ id: 'scene_1', name: '預設場景', locations: [createLocation('正常位置', 'A地點'), createLocation('關精準位置', 'B地點')] }]; currentSceneId = 'scene_1'; sceneCounter = 2; saveState(); } runTests(); render(); updateNotifyButton(); if (intervalId) clearInterval(intervalId); intervalId = setInterval(updateAllCountdowns, 1000); }
     init();
   </script>
 </body>
