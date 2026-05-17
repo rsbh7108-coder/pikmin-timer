@@ -210,6 +210,7 @@
     <div class="tool-row">
       <button type="button" id="exportBtn">匯出</button>
       <button type="button" id="importBtn">匯入</button>
+      <button type="button" id="notifyBtn">啟用提醒</button>
       <button type="button" id="clearAllBtn">清空</button>
     </div>
     <input type="file" id="importFile" accept="application/json,.json" style="display:none">
@@ -249,7 +250,8 @@
         isEditingName: false,
         isEditingDirection: false,
         peopleCount: '',
-        isEditingPeople: false
+        isEditingPeople: false,
+        notifiedOneMinute: false
       };
     }
 
@@ -315,7 +317,7 @@
     function serializeLocations() {
       var data = [], i;
       for (i = 0; i < locations.length; i = i + 1) {
-        data.push({ id: locations[i].id, type: locations[i].type, name: locations[i].name, inputTime: locations[i].inputTime, finishTime: locations[i].finishTime ? locations[i].finishTime.getTime() : null, respawnTime: locations[i].respawnTime ? locations[i].respawnTime.getTime() : null, direction: locations[i].direction || '', peopleCount: locations[i].peopleCount || '' });
+        data.push({ id: locations[i].id, type: locations[i].type, name: locations[i].name, inputTime: locations[i].inputTime, finishTime: locations[i].finishTime ? locations[i].finishTime.getTime() : null, respawnTime: locations[i].respawnTime ? locations[i].respawnTime.getTime() : null, direction: locations[i].direction || '', peopleCount: locations[i].peopleCount || '', notifiedOneMinute: locations[i].notifiedOneMinute ? true : false });
       }
       return { version: 2, exportedAt: new Date().toISOString(), locationCounter: locationCounter, locations: data };
     }
@@ -324,7 +326,7 @@
       if (!rawLocations || !rawLocations.length) return result;
       for (i = 0; i < rawLocations.length; i = i + 1) {
         item = rawLocations[i];
-        result.push({ id: item.id || ('loc_' + new Date().getTime() + '_' + i), type: item.type === '關精準位置' ? '關精準位置' : '正常位置', name: item.name || '未命名地點', inputTime: item.inputTime || '', finishTime: item.finishTime ? new Date(item.finishTime) : null, respawnTime: item.respawnTime ? new Date(item.respawnTime) : null, direction: item.direction || '', isEditingName: false, isEditingDirection: false, peopleCount: item.peopleCount || '', isEditingPeople: false });
+        result.push({ id: item.id || ('loc_' + new Date().getTime() + '_' + i), type: item.type === '關精準位置' ? '關精準位置' : '正常位置', name: item.name || '未命名地點', inputTime: item.inputTime || '', finishTime: item.finishTime ? new Date(item.finishTime) : null, respawnTime: item.respawnTime ? new Date(item.respawnTime) : null, direction: item.direction || '', isEditingName: false, isEditingDirection: false, peopleCount: item.peopleCount || '', isEditingPeople: false, notifiedOneMinute: item.notifiedOneMinute ? true : false });
       }
       return result;
     }
@@ -359,13 +361,14 @@
       if (!location) return;
       input = document.getElementById('time-' + id);
       text = input.value.trim();
-      if (!text) { location.inputTime = ''; location.finishTime = null; location.respawnTime = null; saveState(); render(); return; }
+      if (!text) { location.inputTime = ''; location.finishTime = null; location.respawnTime = null; location.notifiedOneMinute = false; saveState(); render(); return; }
       remainingSeconds = parseTime(text);
       if (remainingSeconds === null) { alert('請輸入正確格式，例如 12:30、1230 或 200'); return; }
       now = new Date();
       location.inputTime = normalizeTimeLabel(text);
       location.finishTime = new Date(now.getTime() + remainingSeconds * 1000);
       location.respawnTime = new Date(location.finishTime.getTime() + 5 * 60 * 1000);
+      location.notifiedOneMinute = false;
       input.value = '';
       saveState();
       render();
@@ -559,6 +562,61 @@
       };
     }
 
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        alert('這個瀏覽器或預覽環境不支援系統通知，仍可使用網頁倒數。正式網址請用 Chrome、Edge 或 Safari 測試。');
+        updateNotifyButton();
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        alert('提醒已啟用');
+        updateNotifyButton();
+        return;
+      }
+      if (Notification.permission === 'denied') {
+        alert('目前通知未允許。若是在 ChatGPT 預覽、LINE 或 FB 內建瀏覽器，可能無法啟用；請用正式網址在 Chrome、Edge 或 Safari 開啟，並到瀏覽器網站設定允許通知。');
+        updateNotifyButton();
+        return;
+      }
+      Notification.requestPermission(function(permission) {
+        if (permission === 'granted') alert('提醒已啟用，倒數剩 1 分鐘會通知。');
+        if (permission !== 'granted') alert('目前尚未允許通知，仍可使用網頁倒數。');
+        updateNotifyButton();
+      });
+    }
+
+    function updateNotifyButton() {
+      var button = document.getElementById('notifyBtn');
+      if (!button) return;
+      button.disabled = false;
+      if (!('Notification' in window)) {
+        button.innerHTML = '通知不支援';
+        return;
+      }
+      if (Notification.permission === 'granted') button.innerHTML = '提醒已啟用';
+      else if (Notification.permission === 'denied') button.innerHTML = '通知未允許';
+      else button.innerHTML = '啟用提醒';
+    }
+
+    function sendOneMinuteNotification(location) {
+      var title;
+      var body;
+      if (!('Notification' in window)) return;
+      if (Notification.permission !== 'granted') return;
+      title = '🍄 菇菇即將重生';
+      body = location.name + '｜' + location.type + '\n預計重生：' + formatClock(location.respawnTime);
+      try {
+        new Notification(title, {
+          body: body,
+          tag: 'pikmin-' + location.id,
+          renotify: true
+        });
+      } catch (e) {
+        console.warn('通知送出失敗', e);
+      }
+      if (navigator.vibrate) navigator.vibrate([200, 80, 200]);
+    }
+
     function updateAllCountdowns() {
       var i, location, el, inputEl, finishEl, respawnEl, diff;
       for (i = 0; i < locations.length; i = i + 1) {
@@ -575,7 +633,14 @@
         if (!location.respawnTime) { el.innerHTML = '尚未設定'; el.className = 'countdown-inline waiting'; continue; }
         diff = location.respawnTime.getTime() - new Date().getTime();
         if (diff <= 0) { el.innerHTML = '✅ 已重生'; el.className = 'countdown-inline done'; }
-        else { el.innerHTML = '倒數 ' + formatCountdown(diff); }
+        else {
+          if (diff <= 60000 && !location.notifiedOneMinute) {
+            sendOneMinuteNotification(location);
+            location.notifiedOneMinute = true;
+            saveState();
+          }
+          el.innerHTML = '倒數 ' + formatCountdown(diff);
+        }
       }
     }
 
@@ -607,10 +672,11 @@
       document.getElementById('addPreciseOffBtn').onclick = function() { addLocation('關精準位置'); };
       document.getElementById('exportBtn').onclick = exportData;
       document.getElementById('importBtn').onclick = function() { document.getElementById('importFile').click(); };
+      document.getElementById('notifyBtn').onclick = requestNotificationPermission;
       document.getElementById('clearAllBtn').onclick = clearAllData;
       document.getElementById('importFile').onchange = function(event) { var file = event.target.files && event.target.files[0]; if (file) importDataFromFile(file); event.target.value = ''; };
       if (!loadState()) { locations = [createLocation('正常位置', 'A地點'), createLocation('關精準位置', 'B地點')]; saveState(); }
-      runTests(); render(); if (intervalId) clearInterval(intervalId); intervalId = setInterval(updateAllCountdowns, 1000);
+      runTests(); render(); updateNotifyButton(); if (intervalId) clearInterval(intervalId); intervalId = setInterval(updateAllCountdowns, 1000);
     }
     init();
   </script>
