@@ -148,7 +148,7 @@
     .input-row input { flex: 0 0 88px; max-width: 88px; text-align: center; }
     .start-btn { flex: 0 0 auto; padding-left: 10px; padding-right: 10px; }
     .time-info-row { gap: 8px; margin-top: 4px; justify-content: flex-end; }
-    .status-row { font-size: 13px; color: #5e6a59; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; text-align: right; }
+    .status-row { font-size: 13px; color: #5e6a59; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto; text-align: left; }
     .respawn-row { color: #d6427a; font-weight: 900; font-size: 14px; white-space: nowrap; flex: 0 0 auto; text-align: right; }
     .desktop-delete { background: #eee; color: #666; padding: 8px 10px; font-size: 13px; border-radius: 10px; }
     .inline-edit-row, .people-edit-row { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; margin-bottom: 6px; }
@@ -168,13 +168,18 @@
       .location-input-row { grid-template-columns: 1fr; }
       .location-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
       .card-grid { grid-template-columns: 1fr; gap: 5px; }
-      .title-row { display: grid; grid-template-columns: minmax(0,1fr) auto auto auto auto; gap: 5px; }
-      .meta-row { justify-content: flex-end; margin-top: -25px; padding-left: 42%; min-height: 25px; }
+      .main-block { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; column-gap: 8px; }
+      .title-row { grid-column: 1; min-width: 0; gap: 5px; }
+      .meta-row { grid-column: 2; justify-content: flex-end; margin-top: 0; padding-left: 0; min-height: 25px; gap: 5px; white-space: nowrap; }
+      .direction-display.empty, .people-display.empty { font-size: 12px; }
       .timer-block { display: grid; grid-template-columns: 1fr; gap: 2px; }
-      .input-row { justify-content: flex-end; }
-      .input-row input { flex-basis: 82px; max-width: 82px; padding-left: 6px; padding-right: 6px; }
+      .input-row { display: grid; grid-template-columns: 82px auto minmax(0,1fr); align-items: center; justify-content: stretch; gap: 6px; }
+      .input-row input { width: 82px; max-width: 82px; padding-left: 6px; padding-right: 6px; }
       .start-btn { padding: 9px 8px; }
-      .time-info-row { gap: 6px; margin-top: 2px; }
+      .countdown-inline { justify-self: end; margin-left: 0; font-size: 15px; }
+      .time-info-row { gap: 6px; margin-top: 2px; justify-content: space-between; }
+      .status-row { text-align: left; }
+      .respawn-row { text-align: right; }
       .desktop-delete, .delete-block { display: none; }
       .location-card { padding-top: 8px; padding-bottom: 8px; }
     }
@@ -512,13 +517,13 @@
         metaRow.appendChild(makeButton('↕', 'edit-icon-btn', function(){ editDirection(location.id); }));
         peopleDisplay = document.createElement('span'); peopleDisplay.className = 'people-display' + (location.peopleCount ? '' : ' empty'); peopleDisplay.textContent = location.peopleCount ? '👤' + location.peopleCount : '👤人數'; metaRow.appendChild(peopleDisplay);
         metaRow.appendChild(makeButton('✎', 'edit-icon-btn', function(){ editPeople(location.id); }));
-        countdownSpan = document.createElement('span'); countdownSpan.className = 'countdown-inline waiting'; countdownSpan.id = 'countdown-' + location.id; countdownSpan.textContent = '尚未設定'; metaRow.appendChild(countdownSpan);
       }
       if (location.isEditingPeople) { peoplePopover = document.createElement('div'); peoplePopover.className = 'people-popover'; main.appendChild(peoplePopover); peopleRow = document.createElement('div'); peopleRow.className = 'people-edit-row'; peoplePopover.appendChild(peopleRow); peopleInput = document.createElement('input'); peopleInput.id = 'people-' + location.id; peopleInput.placeholder = '人數'; peopleInput.value = location.peopleCount; peopleInput.onkeydown = function(event) { event = event || window.event; if (event.key === 'Enter' || event.keyCode === 13) updatePeople(location.id); if (event.key === 'Escape' || event.keyCode === 27) clearPeople(location.id); }; peopleRow.appendChild(peopleInput); peopleRow.appendChild(makeButton('確定','save-btn',function(){ updatePeople(location.id); })); peopleRow.appendChild(makeButton('清除','cancel-btn',function(){ clearPeople(location.id); })); }
       if (location.isEditingDirection) { directionPopover = document.createElement('div'); directionPopover.className = 'direction-popover'; main.appendChild(directionPopover); directionRow = document.createElement('div'); directionRow.className = 'direction-row'; directionPopover.appendChild(directionRow); directionButtons = getDirectionButtons(); for (i = 0; i < directionButtons.length; i += 1) { (function(item){ directionButton = makeButton(item.label, 'direction-btn' + (location.direction === item.value ? ' active' : ''), function(){ if (item.value) setDirection(location.id, item.value); }); if (!item.value) { directionButton.style.visibility = 'hidden'; directionButton.disabled = true; } directionRow.appendChild(directionButton); }(directionButtons[i])); } directionPopover.appendChild(makeButton('清除方位','cancel-btn',function(){ clearDirection(location.id); })); }
       inputRow = document.createElement('div'); inputRow.className = 'input-row'; timer.appendChild(inputRow);
       timeInput = document.createElement('input'); timeInput.id = 'time-' + location.id; timeInput.placeholder = '1230'; timeInput.maxLength = 5; timeInput.onkeydown = function(event){ event = event || window.event; if (event.key === 'Enter' || event.keyCode === 13) startOrClearTimer(location.id); };
       inputRow.appendChild(timeInput); inputRow.appendChild(makeButton('起算/清空','start-btn',function(){ startOrClearTimer(location.id); }));
+      countdownSpan = document.createElement('span'); countdownSpan.className = 'countdown-inline waiting'; countdownSpan.id = 'countdown-' + location.id; countdownSpan.textContent = '尚未設定'; inputRow.appendChild(countdownSpan);
       infoRow = document.createElement('div'); infoRow.className = 'time-info-row'; timer.appendChild(infoRow);
       statusRow = document.createElement('div'); statusRow.className = 'status-row'; statusRow.appendChild(document.createTextNode('剩 ')); inputSpan = document.createElement('span'); inputSpan.id = 'input-' + location.id; statusRow.appendChild(inputSpan); statusRow.appendChild(document.createTextNode('｜完 ')); finishSpan = document.createElement('span'); finishSpan.id = 'finish-' + location.id; statusRow.appendChild(finishSpan); infoRow.appendChild(statusRow);
       respawnRow = document.createElement('div'); respawnRow.className = 'respawn-row'; respawnRow.appendChild(document.createTextNode('重生 ')); respawnSpan = document.createElement('span'); respawnSpan.id = 'respawn-' + location.id; respawnRow.appendChild(respawnSpan); infoRow.appendChild(respawnRow);
