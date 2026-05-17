@@ -28,76 +28,81 @@
     .tool-row button { background: #f0f3ee; color: #5f6b59; font-size: 12px; padding: 6px 9px; border-radius: 999px; }
 
     .panel { background: #fff; border-radius: 15px; padding: 10px; margin-bottom: 10px; border: 1px solid #dfead8; box-shadow: 0 5px 14px rgba(51,93,39,.11); }
-    .tour-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(20,35,20,.58); display: none; align-items: center; justify-content: center; padding: 18px; }
+    .tour-overlay { position: fixed; inset: 0; z-index: 10001; background: transparent; display: none; padding: 0; pointer-events: none; }
     .tour-highlight {
       position: fixed;
       border: 2px solid #ffffff;
       border-radius: 16px;
-      box-shadow: 0 0 0 9999px rgba(20,35,20,.58), 0 0 0 4px rgba(255,255,255,.25);
+      box-shadow: 0 0 0 9999px rgba(15,23,42,.34), 0 0 0 4px rgba(255,255,255,.32), 0 0 22px rgba(255,255,255,.26);
       z-index: 10000;
       pointer-events: none;
       transition: all .25s ease;
     }
     .tour-highlight.hidden { display: none; }
-    .tour-overlay.open { display: flex; }
+    .tour-overlay.open { display: block; }
     .tour-card {
-      width: min(420px,100%);
-      min-height: 270px;
+      position: fixed;
+      width: min(360px, calc(100vw - 24px));
+      min-height: 0;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      background: transparent;
-      border-radius: 22px;
-      padding: 8px;
-      box-shadow: none;
-      border: 0;
-      backdrop-filter: none;
+      justify-content: flex-start;
+      background: rgba(255,255,255,.96);
+      color: #233322;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: 0 16px 38px rgba(0,0,0,.24);
+      border: 1px solid rgba(255,255,255,.85);
+      backdrop-filter: blur(10px);
+      pointer-events: auto;
+      transition: left .22s ease, top .22s ease, right .22s ease, bottom .22s ease;
     }
     .tour-step-badge {
       display: inline-block;
-      background: rgba(255,255,255,.18);
-      color: #ffffff;
+      background: #e7f5df;
+      color: #2f7d32;
       font-size: 12px;
       font-weight: 900;
       border-radius: 999px;
       padding: 5px 10px;
       margin-bottom: 10px;
-      border: 1px solid rgba(255,255,255,.25);
-      backdrop-filter: blur(6px);
+      border: 1px solid #d8e8cf;
+      backdrop-filter: none;
     }
     .tour-title {
       font-size: 22px;
       font-weight: 950;
-      color: #ffffff;
+      color: #263d24;
       margin-bottom: 10px;
-      text-shadow: 0 2px 12px rgba(0,0,0,.35);
+      text-shadow: none;
     }
     .tour-text {
       font-size: 15px;
       line-height: 1.8;
-      color: rgba(255,255,255,.95);
+      color: #4f6548;
       margin-bottom: 16px;
-      min-height: 108px;
-      text-shadow: 0 2px 12px rgba(0,0,0,.35);
+      min-height: 96px;
+      text-shadow: none;
     }
     .tour-actions { display: flex; gap: 8px; justify-content: space-between; align-items: center; min-height: 44px; }
     .tour-right-actions { display: flex; gap: 8px; align-items: center; }
     .tour-btn {
-      background: rgba(255,255,255,.18);
+      background: #4caf50;
       color: #ffffff;
       border-radius: 999px;
       padding: 9px 14px;
       font-size: 14px;
-      border: 1px solid rgba(255,255,255,.25);
-      backdrop-filter: blur(6px);
+      border: 1px solid #4caf50;
+      backdrop-filter: none;
     }
     .tour-btn.secondary-tour {
-      background: rgba(255,255,255,.12);
-      color: rgba(255,255,255,.92);
+      background: #f0f3ee;
+      color: #5f6b59;
+      border-color: #e0e8dc;
     }
     .tour-btn.skip-tour {
       background: transparent;
-      color: rgba(255,255,255,.75);
+      color: #8a9584;
       padding: 8px 4px;
       border: 0;
       backdrop-filter: none;
@@ -105,6 +110,10 @@
     .tour-dots { display: flex; gap: 5px; justify-content: center; margin-top: 12px; }
     .tour-dot { width: 7px; height: 7px; border-radius: 50%; background: #d6e4cf; }
     .tour-dot.active { background: #4caf50; }
+    @media (max-width: 640px) {
+      .tour-card { left: 12px !important; right: 12px !important; bottom: 14px !important; top: auto !important; width: auto; max-height: 46vh; overflow-y: auto; }
+      .tour-text { min-height: 72px; }
+    }
     .location-input-row { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; align-items: center; }
     .location-buttons { display: contents; }
     input { width: 100%; min-width: 0; padding: 9px 10px; font-size: 15px; border: 1px solid #cddcc6; border-radius: 11px; outline: none; background: #fbfdf9; }
@@ -360,11 +369,20 @@
     function updateTourHighlight() {
       var step = tourSteps[tourIndex];
       var highlight = document.getElementById('tourHighlight');
+      var card = document.querySelector('.tour-card');
       var target;
       var rect;
+      var cardWidth = 360;
+      var cardHeight = 240;
+      var gap = 14;
+      var left;
+      var top;
+      var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+      var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
       if (!step || !step.selector) {
         highlight.className = 'tour-highlight hidden';
+        positionTourCardCenter(card);
         return;
       }
 
@@ -372,6 +390,7 @@
 
       if (!target) {
         highlight.className = 'tour-highlight hidden';
+        positionTourCardCenter(card);
         return;
       }
 
@@ -382,6 +401,59 @@
       highlight.style.top = (rect.top - 6) + 'px';
       highlight.style.width = (rect.width + 12) + 'px';
       highlight.style.height = (rect.height + 12) + 'px';
+
+      if (viewportWidth <= 640) {
+        card.style.left = '12px';
+        card.style.right = '12px';
+        card.style.top = 'auto';
+        card.style.bottom = '14px';
+        return;
+      }
+
+      cardWidth = Math.min(360, viewportWidth - 24);
+      cardHeight = card.offsetHeight || 240;
+
+      if (rect.right + gap + cardWidth <= viewportWidth - 12) {
+        left = rect.right + gap;
+        top = rect.top;
+      } else if (rect.left - gap - cardWidth >= 12) {
+        left = rect.left - gap - cardWidth;
+        top = rect.top;
+      } else if (rect.bottom + gap + cardHeight <= viewportHeight - 12) {
+        left = Math.min(Math.max(12, rect.left), viewportWidth - cardWidth - 12);
+        top = rect.bottom + gap;
+      } else {
+        left = Math.min(Math.max(12, rect.left), viewportWidth - cardWidth - 12);
+        top = Math.max(12, rect.top - gap - cardHeight);
+      }
+
+      top = Math.min(Math.max(12, top), viewportHeight - cardHeight - 12);
+
+      card.style.left = left + 'px';
+      card.style.top = top + 'px';
+      card.style.right = 'auto';
+      card.style.bottom = 'auto';
+    }
+
+    function positionTourCardCenter(card) {
+      var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+      var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+      var cardWidth;
+      var cardHeight;
+      if (!card) return;
+      if (viewportWidth <= 640) {
+        card.style.left = '12px';
+        card.style.right = '12px';
+        card.style.top = 'auto';
+        card.style.bottom = '14px';
+        return;
+      }
+      cardWidth = card.offsetWidth || 360;
+      cardHeight = card.offsetHeight || 240;
+      card.style.left = Math.max(12, Math.round((viewportWidth - cardWidth) / 2)) + 'px';
+      card.style.top = Math.max(12, Math.round((viewportHeight - cardHeight) / 2)) + 'px';
+      card.style.right = 'auto';
+      card.style.bottom = 'auto';
     }
 
     function renderTour() {
