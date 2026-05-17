@@ -57,7 +57,27 @@
     .secondary:hover { background: #684ee0; }
     .hint { font-size: 12px; color: #7b8874; margin-top: 8px; line-height: 1.45; }
 
-    .location-list { display: flex; flex-direction: column; gap: 9px; width: 100%; overflow-x: hidden; }
+    .location-list { display: flex; flex-direction: column; gap: 12px; width: 100%; overflow-x: hidden; }
+    .group-block { display: flex; flex-direction: column; gap: 9px; }
+    .group-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #4f6548;
+      padding: 0 4px;
+      margin-top: 2px;
+    }
+    .group-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4caf50;
+      flex: 0 0 auto;
+    }
+    .group-dot.precise-off { background: #7b61ff; }
+    .group-count { color: #8a9584; font-size: 12px; font-weight: 800; }
     .swipe-item { position: relative; width: 100%; overflow: hidden; border-radius: 15px; }
     .swipe-delete {
       position: absolute; right: 0; top: 0; bottom: 0;
@@ -267,8 +287,25 @@
       var seconds = totalSeconds % 60;
       return minutes + '分 ' + pad2(seconds) + '秒';
     }
-    function getSortValue(location) { if (!location.respawnTime) return 9007199254740991; return Math.max(0, location.respawnTime.getTime() - new Date().getTime()); }
-    function sortLocations() { locations.sort(function(a, b) { return getSortValue(a) - getSortValue(b); }); }
+    function getTimerStatus(location) {
+      if (!location.respawnTime) return 2;
+      if (location.respawnTime.getTime() <= new Date().getTime()) return 1;
+      return 0;
+    }
+    function getSortValue(location) {
+      if (!location.respawnTime) return 9007199254740991;
+      return Math.max(0, location.respawnTime.getTime() - new Date().getTime());
+    }
+    function sortLocationList(list) {
+      list.sort(function(a, b) {
+        var statusA = getTimerStatus(a);
+        var statusB = getTimerStatus(b);
+        if (statusA !== statusB) return statusA - statusB;
+        if (statusA === 0) return getSortValue(a) - getSortValue(b);
+        return a.name.localeCompare(b.name, 'zh-Hant');
+      });
+      return list;
+    }
     function findLocation(id) { var i; for (i = 0; i < locations.length; i = i + 1) if (locations[i].id === id) return locations[i]; return null; }
 
     function safeStorageAvailable() {
@@ -339,7 +376,95 @@
     function getDirectionArrow(direction) { var map = { '上': '↑', '下': '↓', '左': '←', '右': '→', '右上': '↗', '左上': '↖', '右下': '↘', '左下': '↙' }; return map[direction] || direction; }
     function getDirectionButtons() { return [{ value: '左上', label: '↖' }, { value: '上', label: '↑' }, { value: '右上', label: '↗' }, { value: '左', label: '←' }, { value: '', label: '・' }, { value: '右', label: '→' }, { value: '左下', label: '↙' }, { value: '下', label: '↓' }, { value: '右下', label: '↘' }]; }
 
-    function render() { var list = document.getElementById('locationList'), i; sortLocations(); clearElement(list); for (i = 0; i < locations.length; i = i + 1) list.appendChild(createLocationCard(locations[i])); updateAllCountdowns(); }
+    function render() {
+      var list = document.getElementById('locationList');
+      var activeLocations = [];
+      var i;
+
+      clearElement(list);
+
+      for (i = 0; i < locations.length; i = i + 1) {
+        if (getTimerStatus(locations[i]) === 0) activeLocations.push(locations[i]);
+      }
+
+      if (activeLocations.length) {
+        sortLocationList(activeLocations);
+        renderActiveGroup(list, activeLocations);
+      }
+
+      renderInactiveGroup(list, '正常位置');
+      renderInactiveGroup(list, '關精準位置');
+
+      updateAllCountdowns();
+    }
+
+    function renderActiveGroup(container, activeLocations) {
+      var groupBlock;
+      var groupTitle;
+      var dot;
+      var count;
+      var i;
+
+      groupBlock = document.createElement('div');
+      groupBlock.className = 'group-block';
+
+      groupTitle = document.createElement('div');
+      groupTitle.className = 'group-title';
+
+      dot = document.createElement('span');
+      dot.className = 'group-dot';
+      dot.style.background = '#ff9800';
+      groupTitle.appendChild(dot);
+
+      groupTitle.appendChild(document.createTextNode('正在倒數'));
+
+      count = document.createElement('span');
+      count.className = 'group-count';
+      count.appendChild(document.createTextNode(activeLocations.length + ' 個進行中'));
+      groupTitle.appendChild(count);
+
+      groupBlock.appendChild(groupTitle);
+
+      for (i = 0; i < activeLocations.length; i = i + 1) {
+        groupBlock.appendChild(createLocationCard(activeLocations[i]));
+      }
+
+      container.appendChild(groupBlock);
+    }
+
+    function renderInactiveGroup(container, type) {
+      var groupLocations = [];
+      var groupBlock;
+      var groupTitle;
+      var dot;
+      var count;
+      var i;
+      for (i = 0; i < locations.length; i = i + 1) {
+        if (locations[i].type === type && getTimerStatus(locations[i]) !== 0) groupLocations.push(locations[i]);
+      }
+      if (!groupLocations.length) return;
+      sortLocationList(groupLocations);
+
+      groupBlock = document.createElement('div');
+      groupBlock.className = 'group-block';
+
+      groupTitle = document.createElement('div');
+      groupTitle.className = 'group-title';
+      dot = document.createElement('span');
+      dot.className = 'group-dot' + (type === '關精準位置' ? ' precise-off' : '');
+      groupTitle.appendChild(dot);
+      groupTitle.appendChild(document.createTextNode(type + '（待處理）'));
+      count = document.createElement('span');
+      count.className = 'group-count';
+      count.appendChild(document.createTextNode(groupLocations.length + ' 個地點'));
+      groupTitle.appendChild(count);
+      groupBlock.appendChild(groupTitle);
+
+      for (i = 0; i < groupLocations.length; i = i + 1) {
+        groupBlock.appendChild(createLocationCard(groupLocations[i]));
+      }
+      container.appendChild(groupBlock);
+    }
 
     function createLocationCard(location) {
       var outer = document.createElement('div'), deleteAction = document.createElement('div'), card = document.createElement('div'), grid = document.createElement('div');
@@ -467,6 +592,14 @@
       console.assert(normalizeTimeLabel('1230') === '12:30', 'normalizeTimeLabel should normalize 1230');
       console.assert(getDirectionButtons().length === 9, 'direction pad should have 9 cells');
       console.assert(hydrateLocations([{ name: '測試', type: '正常位置', respawnTime: 1000 }])[0].respawnTime instanceof Date, 'hydrateLocations should restore dates');
+      var activeTest = createLocation('正常位置', '倒數中');
+      activeTest.respawnTime = new Date(new Date().getTime() + 60000);
+      var doneTest = createLocation('正常位置', '已重生');
+      doneTest.respawnTime = new Date(new Date().getTime() - 60000);
+      var emptyTest = createLocation('正常位置', '未設定');
+      console.assert(getTimerStatus(activeTest) === 0, 'active timer should be status 0');
+      console.assert(getTimerStatus(doneTest) === 1, 'done timer should be status 1');
+      console.assert(getTimerStatus(emptyTest) === 2, 'empty timer should be status 2');
     }
 
     function init() {
