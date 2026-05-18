@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <!-- Google tag (gtag.js) -->
+      <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-N7M70RTZPX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -200,10 +200,10 @@
       body { padding: 9px; }
       h1 { font-size: 21px; }
       .subtitle { max-height: 40px; overflow: hidden; }
-      .location-input-row { grid-template-columns: 92px 1fr 1fr; gap: 6px; }
+      .location-input-row { grid-template-columns: minmax(0,1.15fr) minmax(0,.95fr) minmax(0,.95fr); gap: 6px; }
       .location-buttons { display: contents; }
-      .location-input-row input { padding: 8px 7px; font-size: 14px; }
-      .location-buttons button { padding: 8px 6px; font-size: 13px; }
+      .location-input-row input { padding: 8px 10px; font-size: 14px; min-width: 0; }
+      .location-buttons button { padding: 8px 4px; font-size: 12px; white-space: nowrap; }
       .card-grid { grid-template-columns: 1fr; gap: 5px; }
       .main-block { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; column-gap: 8px; }
       .title-row { grid-column: 1; min-width: 0; gap: 5px; }
