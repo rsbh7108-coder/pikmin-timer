@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <!-- Google tag (gtag.js) -->
+    <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-N7M70RTZPX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -200,8 +200,10 @@
       body { padding: 9px; }
       h1 { font-size: 21px; }
       .subtitle { max-height: 40px; overflow: hidden; }
-      .location-input-row { grid-template-columns: 1fr; }
-      .location-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .location-input-row { grid-template-columns: 92px 1fr 1fr; gap: 6px; }
+      .location-buttons { display: contents; }
+      .location-input-row input { padding: 8px 7px; font-size: 14px; }
+      .location-buttons button { padding: 8px 6px; font-size: 13px; }
       .card-grid { grid-template-columns: 1fr; gap: 5px; }
       .main-block { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; column-gap: 8px; }
       .title-row { grid-column: 1; min-width: 0; gap: 5px; }
@@ -369,7 +371,7 @@
 
     var tourSteps = [
       { title: '歡迎使用', text: '歡迎各位皮友們使用！設計者所在地區是一級戰區，搶菇總是心跳加速，搶不到又恨得牙癢癢；有時候按了快 5 分鐘又一場空，還會懷疑自己是不是有點蠢。為了不要一直浪費時間苦等，就設計了這個小工具，希望大家都能更輕鬆搶菇、愉快打菇。', selector: '' },
-      { title: '新增地點', text: '輸入菇的名稱，選擇「正常位置」或「關精準位置」，就可以建位。「關精準位置」可於手機的設定、Pikmin Bloom、位置裡設定。', selector: '.panel' },
+      { title: '新增地點', text: '輸入最多 8 個字的菇名，接著選擇「正常位置」或「關精準位置」，同一列就能快速建位。「關精準位置」可於手機的設定、Pikmin Bloom、位置裡設定。', selector: '.location-input-row' },
       { title: '地點修改名稱', text: '地點旁邊的 ✎ 可以修改名稱。', selector: '.location-card .edit-icon-btn' },
       { title: '輸入剩餘時間', text: '在剩餘時間欄位輸入 1230 代表 12分30秒；輸入 200 代表 2分00秒。按「起算/清空」即可開始倒數。若輸入錯誤重新輸入即可；若要取消倒數，欄位空白後再按「起算/清空」。', selector: '.location-card .input-row' },
       { title: '新增 / 切換場景', text: '上方頁籤可以切換場景，例如家裡、辦公室。按「＋新增」可建立新場景，最多 3 個。', selector: '.top-bar' },
