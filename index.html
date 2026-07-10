@@ -12,15 +12,21 @@
 </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>皮克敏菇菇重生計時器</title>
-  <meta name="description" content="節省等待、輕鬆打菇。支援手機、場景切換、網頁暫存，不用安裝、不用登入、沒有廣告。">
-  <meta property="og:title" content="皮克敏菇菇重生計時器">
+  <title>皮克敏菇菇重生計時器｜Pikmin Bloom 菇菇倒數工具</title>
+  <meta name="description" content="皮克敏菇菇重生計時器，協助 Pikmin Bloom 玩家記錄菇菇剩餘時間，自動計算打完後加 5 分鐘的重生時間，支援手機、場景切換與網頁暫存。">
+  
+  <meta name="keywords" content="皮克敏,皮克敏Bloom,Pikmin Bloom,菇菇重生,菇菇計時器,搶菇工具,皮克敏工具">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="canonical" href="https://rsbh7108-coder.github.io/pikmin-timer/">
+<meta property="og:title" content="皮克敏菇菇重生計時器">
   <meta property="og:description" content="節省等待、輕鬆打菇。支援手機、場景切換、網頁暫存，不用安裝、不用登入、沒有廣告。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://rsbh7108-coder.github.io/pikmin-timer/">
   <meta property="og:image" content="https://rsbh7108-coder.github.io/pikmin-timer/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="皮克敏菇菇重生計時器網站預覽圖">
+  <meta property="og:locale" content="zh_TW">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="皮克敏菇菇重生計時器">
   <meta name="twitter:description" content="節省等待、輕鬆打菇。支援手機、場景切換、網頁暫存，不用安裝、不用登入、沒有廣告。">
@@ -136,6 +142,26 @@
     .tour-dots { display: flex; gap: 5px; justify-content: center; margin-top: 12px; }
     .tour-dot { width: 7px; height: 7px; border-radius: 50%; background: #d6e4cf; }
     .tour-dot.active { background: #4caf50; }
+
+    .seo-info {
+      margin: 24px 2px 10px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid #dfead8;
+      border-radius: 14px;
+      color: #5e6a59;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .seo-info h2 {
+      margin: 0 0 8px;
+      color: #2f7d32;
+      font-size: 16px;
+    }
+    .seo-info p {
+      margin: 6px 0;
+    }
+
     @media (max-width: 640px) {
       .tour-card { left: 12px !important; right: 12px !important; bottom: 14px !important; top: auto !important; width: auto; max-height: 46vh; overflow-y: auto; }
       .tour-text { min-height: 72px; }
@@ -221,6 +247,30 @@
       .location-card { padding-top: 8px; padding-bottom: 8px; }
     }
   </style>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "皮克敏菇菇重生計時器",
+    "alternateName": "Pikmin Bloom 菇菇倒數工具",
+    "url": "https://rsbh7108-coder.github.io/pikmin-timer/",
+    "description": "協助 Pikmin Bloom 玩家記錄菇菇剩餘時間，自動計算打完後加 5 分鐘的重生時間。",
+    "applicationCategory": "GameApplication",
+    "operatingSystem": "Web",
+    "browserRequirements": "Requires JavaScript and localStorage support",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "TWD"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "種子雲資訊有限公司"
+    }
+  }
+  </script>
+
 </head>
 <body>
   <div class="app">
@@ -253,6 +303,13 @@
     </section>
 
     <section id="locationList" class="location-list"></section>
+
+
+    <section class="seo-info" aria-label="網站說明">
+      <h2>皮克敏菇菇重生計時器</h2>
+      <p>這是一個提供 Pikmin Bloom 玩家記錄菇菇剩餘時間的網頁工具。輸入菇菇剩餘時間後，系統會自動計算打完時間，再加 5 分鐘顯示預計重生時間。</p>
+      <p>支援正常位置與關精準位置分類、倒數排序、多場景切換及瀏覽器自動暫存，手機與電腦皆可直接使用，不需安裝 App 或登入帳號。</p>
+    </section>
 
     <footer style="margin:22px 0 8px;text-align:center;font-size:12px;color:#8a9584;letter-spacing:.5px;">
       種子雲 © 2026

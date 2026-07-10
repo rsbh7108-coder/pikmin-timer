@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
 
-User-agent: facebookexternalhit
-Allow: /
-
-User-agent: Facebot
-Allow: /
+Sitemap: https://rsbh7108-coder.github.io/pikmin-timer/sitemap.xml
